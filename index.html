@@ -7,199 +7,116 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
-
   :root {
-    --bg:        #0a0e1a;
-    --surface:   #111827;
-    --card:      #161d2e;
-    --border:    #1e2d45;
-    --accent:    #00d4ff;
-    --accent2:   #7c3aed;
-    --green:     #10b981;
-    --red:       #ef4444;
-    --gold:      #f59e0b;
-    --text:      #e2e8f0;
-    --muted:     #64748b;
-    --font-head: 'Space Grotesk', sans-serif;
-    --font-mono: 'Space Mono', monospace;
+    --bg:#0a0e1a; --surface:#111827; --card:#161d2e; --border:#1e2d45;
+    --accent:#00d4ff; --accent2:#7c3aed;
+    --green:#10b981; --red:#ef4444; --gold:#f59e0b;
+    --text:#e2e8f0; --muted:#64748b;
+    --font-head:'Space Grotesk',sans-serif; --font-mono:'Space Mono',monospace;
   }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--font-head); min-height: 100vh; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-head);min-height:100vh;}
 
   /* HEADER */
-  header {
-    background: linear-gradient(135deg, #0a0e1a 0%, #0d1b33 50%, #0a0e1a 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 18px 32px;
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 100;
-  }
-  .logo { display: flex; align-items: center; gap: 12px; }
-  .logo-mark {
-    width: 36px; height: 36px; border-radius: 8px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: #fff;
-  }
-  .logo-text { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
-  .logo-text span { color: var(--accent); }
-  .header-right { display: flex; align-items: center; gap: 20px; }
-  .market-status {
-    display: flex; align-items: center; gap: 8px;
-    font-family: var(--font-mono); font-size: 11px; color: var(--muted);
-  }
-  .status-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--green);
-    animation: pulse 2s infinite;
-  }
-  .status-dot.closed { background: var(--red); animation: none; }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
-    50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(16,185,129,0); }
-  }
-  #next-refresh {
-    font-family: var(--font-mono); font-size: 11px; color: var(--muted);
-  }
-  #refresh-btn {
-    background: transparent; border: 1px solid var(--border); color: var(--accent);
-    padding: 6px 14px; border-radius: 6px; font-family: var(--font-head); font-size: 12px;
-    cursor: pointer; transition: all 0.2s;
-  }
-  #refresh-btn:hover { background: rgba(0,212,255,0.1); border-color: var(--accent); }
+  header{background:linear-gradient(135deg,#0a0e1a 0%,#0d1b33 50%,#0a0e1a 100%);border-bottom:1px solid var(--border);padding:18px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-mark{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:14px;font-weight:700;color:#fff;}
+  .logo-text{font-size:18px;font-weight:700;letter-spacing:-0.5px;}
+  .logo-text span{color:var(--accent);}
+  .header-right{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+  .market-status{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;color:var(--muted);}
+  .status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+  .status-dot.closed{background:var(--red);animation:none;}
+  @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(16,185,129,.4);}50%{opacity:.8;box-shadow:0 0 0 6px rgba(16,185,129,0);}}
+  #next-refresh{font-family:var(--font-mono);font-size:11px;color:var(--muted);}
+  #refresh-btn{background:transparent;border:1px solid var(--border);color:var(--accent);padding:6px 14px;border-radius:6px;font-family:var(--font-head);font-size:12px;cursor:pointer;transition:all .2s;}
+  #refresh-btn:hover{background:rgba(0,212,255,.1);border-color:var(--accent);}
 
-  /* MAIN */
-  main { padding: 28px 32px; max-width: 1600px; margin: 0 auto; }
+  main{padding:28px 32px;max-width:1600px;margin:0 auto;}
 
   /* SUMMARY STRIP */
-  .summary-strip {
-    display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 28px;
-  }
-  .sum-card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-    padding: 16px 18px;
-  }
-  .sum-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
-  .sum-value { font-size: 22px; font-weight: 700; font-family: var(--font-mono); }
-  .sum-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
-  .up { color: var(--green); }
-  .dn { color: var(--red); }
+  .summary-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px;}
+  .sum-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+  .sum-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;}
+  .sum-value{font-size:22px;font-weight:700;font-family:var(--font-mono);}
+  .sum-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+  .up{color:var(--green);} .dn{color:var(--red);}
 
-  /* SECTION TITLE */
-  .section-title {
-    font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted);
-    margin: 28px 0 14px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .section-title{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin:28px 0 14px;display:flex;align-items:center;gap:10px;}
+  .section-title::after{content:'';flex:1;height:1px;background:var(--border);}
 
-  /* ALLOCATION CHART ROW */
-  .chart-row { display: grid; grid-template-columns: 340px 1fr; gap: 18px; margin-bottom: 28px; }
-  .chart-card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px;
+  /* CHART ROW */
+  .chart-row{display:grid;grid-template-columns:300px 1fr;gap:18px;margin-bottom:28px;}
+  .chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;}
+  .chart-card h3{font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+  .donut-wrap{position:relative;height:200px;}
+  .cat-legend{margin-top:12px;}
+  .cat-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11px;border-bottom:1px solid rgba(255,255,255,.04);}
+  .cat-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .cat-name{flex:1;color:var(--muted);}
+  .cat-pct{font-family:var(--font-mono);font-size:11px;}
+
+  /* BAR CHART DAY SELECTOR */
+  .bar-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+  .day-selector{display:flex;align-items:center;gap:6px;margin-left:auto;}
+  .day-selector label{font-size:11px;color:var(--muted);font-family:var(--font-mono);}
+  .day-select{
+    background:var(--surface);border:1px solid var(--border);color:var(--text);
+    padding:4px 10px;border-radius:6px;font-family:var(--font-mono);font-size:11px;cursor:pointer;
+    outline:none;
   }
-  .chart-card h3 { font-size: 13px; font-weight: 600; margin-bottom: 16px; }
-  .donut-wrap { position: relative; height: 220px; }
-  .category-legend { margin-top: 14px; }
-  .cat-item {
-    display: flex; align-items: center; gap: 8px; padding: 5px 0;
-    font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.04);
-  }
-  .cat-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-  .cat-name { flex: 1; color: var(--muted); }
-  .cat-pct { font-family: var(--font-mono); font-size: 11px; }
+  .day-select:focus{border-color:var(--accent);}
+  .legend-row{display:flex;gap:14px;font-size:11px;color:var(--muted);}
+  .legend-dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;}
+
+  /* FILTER TABS */
+  .filter-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .tab-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:var(--font-head);font-size:12px;cursor:pointer;transition:all .2s;}
+  .tab-btn.active,.tab-btn:hover{background:rgba(0,212,255,.1);border-color:var(--accent);color:var(--accent);}
+  .tab-btn.core.active{background:rgba(16,185,129,.1);border-color:var(--green);color:var(--green);}
+  .tab-btn.longshot.active{background:rgba(245,158,11,.1);border-color:var(--gold);color:var(--gold);}
 
   /* STOCK GRID */
-  .stock-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-    gap: 14px;
-  }
-  .stock-card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-    padding: 16px 18px; transition: border-color 0.2s, transform 0.15s;
-    position: relative; overflow: hidden;
-  }
-  .stock-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-  .stock-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  }
-  .stock-card.tier-core::before { background: var(--green); }
-  .stock-card.tier-growth::before { background: var(--accent); }
-  .stock-card.tier-longshot::before { background: var(--gold); }
+  .stock-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
+  .stock-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;transition:border-color .2s,transform .15s;position:relative;overflow:hidden;}
+  .stock-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+  .stock-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+  .stock-card.tier-core::before{background:var(--green);}
+  .stock-card.tier-growth::before{background:var(--accent);}
+  .stock-card.tier-longshot::before{background:var(--gold);}
 
-  .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-  .ticker-block {}
-  .ticker { font-family: var(--font-mono); font-size: 18px; font-weight: 700; }
-  .company-name { font-size: 11px; color: var(--muted); margin-top: 2px; }
-  .tier-badge {
-    font-size: 9px; text-transform: uppercase; letter-spacing: 1px;
-    padding: 3px 8px; border-radius: 20px; font-weight: 600;
-  }
-  .tier-badge.core { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
-  .tier-badge.growth { background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.2); }
-  .tier-badge.longshot { background: rgba(245,158,11,0.1); color: var(--gold); border: 1px solid rgba(245,158,11,0.25); }
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+  .ticker{font-family:var(--font-mono);font-size:18px;font-weight:700;}
+  .company-name{font-size:11px;color:var(--muted);margin-top:2px;}
+  .tier-badge{font-size:9px;text-transform:uppercase;letter-spacing:1px;padding:3px 8px;border-radius:20px;font-weight:600;}
+  .tier-badge.core{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3);}
+  .tier-badge.growth{background:rgba(0,212,255,.1);color:var(--accent);border:1px solid rgba(0,212,255,.2);}
+  .tier-badge.longshot{background:rgba(245,158,11,.1);color:var(--gold);border:1px solid rgba(245,158,11,.25);}
 
-  .price-row {
-    display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px;
-  }
-  .price { font-family: var(--font-mono); font-size: 20px; font-weight: 700; }
-  .change-pct {
-    font-family: var(--font-mono); font-size: 12px; font-weight: 600;
-    padding: 2px 7px; border-radius: 5px;
-  }
-  .change-pct.up { background: rgba(16,185,129,0.15); color: var(--green); }
-  .change-pct.dn { background: rgba(239,68,68,0.15); color: var(--red); }
+  .price-row{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;}
+  .price{font-family:var(--font-mono);font-size:20px;font-weight:700;}
+  .change-pct{font-family:var(--font-mono);font-size:12px;font-weight:600;padding:2px 7px;border-radius:5px;}
+  .change-pct.up{background:rgba(16,185,129,.15);color:var(--green);}
+  .change-pct.dn{background:rgba(239,68,68,.15);color:var(--red);}
 
-  .alloc-row {
-    display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 10px;
-  }
-  .alloc-val { font-family: var(--font-mono); color: var(--text); }
+  .alloc-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:8px;}
+  .alloc-val{font-family:var(--font-mono);color:var(--text);}
+  .cat-tag{font-size:10px;color:var(--muted);padding:2px 6px;border:1px solid var(--border);border-radius:4px;}
 
-  .alloc-bar { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 12px; }
-  .alloc-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
-  .stock-card.tier-core .alloc-bar-fill { background: linear-gradient(90deg, var(--green), #059669); }
-  .stock-card.tier-longshot .alloc-bar-fill { background: linear-gradient(90deg, var(--gold), #d97706); }
+  .alloc-bar{height:3px;background:var(--border);border-radius:2px;margin-bottom:12px;}
+  .alloc-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+  .tier-core .alloc-bar-fill{background:linear-gradient(90deg,var(--green),#059669);}
+  .tier-longshot .alloc-bar-fill{background:linear-gradient(90deg,var(--gold),#d97706);}
 
-  .reason {
-    font-size: 11px; color: var(--muted); line-height: 1.5;
-    padding-top: 10px; border-top: 1px solid var(--border);
-  }
+  /* SPARKLINE */
+  .spark-wrap{position:relative;height:90px;margin-bottom:10px;}
+  .spark-wrap canvas{position:absolute;top:0;left:0;width:100%!important;height:100%!important;}
 
-  .mini-chart-wrap { height: 80px; margin-bottom: 8px; position: relative; }
+  .reason{font-size:11px;color:var(--muted);line-height:1.55;padding-top:10px;border-top:1px solid var(--border);}
 
-  /* LOADING SPINNER */
-  .loading {
-    display: inline-block; width: 10px; height: 10px;
-    border: 2px solid var(--border); border-top-color: var(--accent);
-    border-radius: 50%; animation: spin 0.8s linear infinite;
-    margin-left: 6px; vertical-align: middle;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  footer{text-align:center;padding:24px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);margin-top:40px;font-family:var(--font-mono);}
 
-  /* LAST UPDATE FOOTER */
-  footer {
-    text-align: center; padding: 24px; font-size: 11px; color: var(--muted);
-    border-top: 1px solid var(--border); margin-top: 40px;
-    font-family: var(--font-mono);
-  }
-
-  /* CATEGORY FILTER TABS */
-  .filter-tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
-  .tab-btn {
-    padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
-    background: transparent; color: var(--muted); font-family: var(--font-head); font-size: 12px;
-    cursor: pointer; transition: all 0.2s;
-  }
-  .tab-btn.active, .tab-btn:hover { background: rgba(0,212,255,0.1); border-color: var(--accent); color: var(--accent); }
-  .tab-btn.core.active { background: rgba(16,185,129,0.1); border-color: var(--green); color: var(--green); }
-  .tab-btn.longshot.active { background: rgba(245,158,11,0.1); border-color: var(--gold); color: var(--gold); }
-
-  /* SPARKLINE canvas */
-  .sparkline { width: 100%; height: 50px; }
-
-  .error-note { font-size: 10px; color: var(--muted); font-family: var(--font-mono); }
+  .data-age{font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-left:auto;}
 </style>
 </head>
 <body>
@@ -214,23 +131,22 @@
       <div class="status-dot" id="market-dot"></div>
       <span id="market-label">Checking...</span>
     </div>
-    <div id="next-refresh">Next update: —</div>
-    <button id="refresh-btn" onclick="fetchAll()">↻ Refresh Now</button>
+    <div id="next-refresh">Next: —</div>
+    <button id="refresh-btn" onclick="loadData()">↻ Refresh</button>
   </div>
 </header>
 
 <main>
-  <!-- SUMMARY STRIP -->
   <div class="summary-strip">
     <div class="sum-card">
-      <div class="sum-label">Portfolio Value</div>
-      <div class="sum-value" id="port-value">$25,000</div>
-      <div class="sum-sub">Starting capital</div>
+      <div class="sum-label">Portfolio Capital</div>
+      <div class="sum-value">$25,000</div>
+      <div class="sum-sub">Starting budget</div>
     </div>
     <div class="sum-card">
       <div class="sum-label">Current Value</div>
       <div class="sum-value" id="port-current">—</div>
-      <div class="sum-sub" id="port-change-label">Loading...</div>
+      <div class="sum-sub" id="port-change-label">Loading…</div>
     </div>
     <div class="sum-card">
       <div class="sum-label">Positions</div>
@@ -238,552 +154,491 @@
       <div class="sum-sub">4 core · 3 growth · 3 long shots</div>
     </div>
     <div class="sum-card">
-      <div class="sum-label">Best Performer</div>
+      <div class="sum-label">Best Today</div>
       <div class="sum-value up" id="best-ticker">—</div>
-      <div class="sum-sub up" id="best-chg">Loading...</div>
+      <div class="sum-sub up" id="best-chg">—</div>
     </div>
     <div class="sum-card">
-      <div class="sum-label">Worst Performer</div>
+      <div class="sum-label">Worst Today</div>
       <div class="sum-value dn" id="worst-ticker">—</div>
-      <div class="sum-sub dn" id="worst-chg">Loading...</div>
+      <div class="sum-sub dn" id="worst-chg">—</div>
     </div>
   </div>
 
-  <!-- CHARTS ROW -->
   <div class="section-title">Allocation Overview</div>
   <div class="chart-row">
     <div class="chart-card">
       <h3>By Category</h3>
-      <div class="donut-wrap">
-        <canvas id="donut-chart"></canvas>
-      </div>
-      <div class="category-legend" id="cat-legend"></div>
+      <div class="donut-wrap"><canvas id="donut-chart"></canvas></div>
+      <div class="cat-legend" id="cat-legend"></div>
     </div>
     <div class="chart-card">
-      <h3>Daily Performance by Position</h3>
-      <div style="position:relative; width:100%; height:260px;">
+      <h3>
+        Daily Performance by Position
+        <span class="data-age" id="data-age"></span>
+      </h3>
+      <div class="bar-controls">
+        <div class="legend-row">
+          <span><span class="legend-dot" style="background:rgba(16,185,129,.8)"></span>Core ↑</span>
+          <span><span class="legend-dot" style="background:rgba(0,212,255,.8)"></span>Growth ↑</span>
+          <span><span class="legend-dot" style="background:rgba(245,158,11,.8)"></span>Long Shot ↑</span>
+          <span><span class="legend-dot" style="background:rgba(239,68,68,.8)"></span>Any ↓</span>
+        </div>
+        <div class="day-selector">
+          <label>Viewing:</label>
+          <select class="day-select" id="day-select" onchange="onDayChange()">
+            <option value="__today__">Today</option>
+          </select>
+        </div>
+      </div>
+      <div style="position:relative;width:100%;height:240px;">
         <canvas id="bar-chart"></canvas>
       </div>
     </div>
   </div>
 
-  <!-- STOCK CARDS -->
   <div class="section-title">Holdings</div>
-
   <div class="filter-tabs">
-    <button class="tab-btn active" onclick="filterCards('all', this)">All (10)</button>
-    <button class="tab-btn core" onclick="filterCards('core', this)">🟢 Core (4) — 62%</button>
-    <button class="tab-btn" onclick="filterCards('growth', this)">🔵 Growth (3) — 26%</button>
-    <button class="tab-btn longshot" onclick="filterCards('longshot', this)">🟡 Long Shots (3) — 12%</button>
+    <button class="tab-btn active" onclick="filterCards('all',this)">All (10)</button>
+    <button class="tab-btn core" onclick="filterCards('core',this)">🟢 Core (4) — 62%</button>
+    <button class="tab-btn" onclick="filterCards('growth',this)">🔵 Growth (3) — 26%</button>
+    <button class="tab-btn longshot" onclick="filterCards('longshot',this)">🟡 Long Shots (3) — 12%</button>
   </div>
-
   <div class="stock-grid" id="stock-grid"></div>
 </main>
 
-<footer id="footer">Last updated: —</footer>
+<footer id="footer">Loading data…</footer>
 
 <script>
-// ─── PORTFOLIO DEFINITION ───────────────────────────────────────────────────
+// ── PORTFOLIO META ────────────────────────────────────────────────────────────
 const PORTFOLIO = [
-  // ── CORE (4) — proven compounders, 62% of capital ──────────────────────────
-  { ticker:'NVDA',  name:'Nvidia',             alloc:22, tier:'core',     cat:'AI Chips',      reason:'The unavoidable backbone of every AI training and inference cluster on Earth. Blackwell GPU demand is outstripping supply through 2027. Trading at just 21x forward earnings — cheap for a company whose revenue is doubling YoY. The single highest-conviction AI infrastructure play available.' },
-  { ticker:'MSFT',  name:'Microsoft',          alloc:18, tier:'core',     cat:'Cloud / AI',    reason:'Most diversified AI exposure of any mega-cap: Azure (40% YoY growth), OpenAI partnership, Copilot embedded across 400M Office seats, and GitHub. Consistent dividend grower with fortress balance sheet. The safest large bet in this portfolio.' },
-  { ticker:'GOOGL', name:'Alphabet',           alloc:13, tier:'core',     cat:'Cloud / AI',    reason:'Gemini AI integrated into Search, Gmail, YouTube and GCP. Google Cloud signed OpenAI and Meta as customers in 2026 — the ultimate validation. Trades at a meaningful P/E discount to MSFT and AMZN despite comparable AI infrastructure scale.' },
-  { ticker:'MU',    name:'Micron Technology',  alloc:9,  tier:'core',     cat:'AI Memory',     reason:'The only US-based manufacturer of HBM (High-Bandwidth Memory) — the critical ingredient inside every Nvidia GPU. MU up 734% in 12 months as AI demand for HBM3E has sent margins to record highs. Analysts target $1,575. Real earnings growth, not hype.' },
-
-  // ── GROWTH (3) — high-conviction AI infrastructure plays, 26% of capital ───
-  { ticker:'AVGO',  name:'Broadcom',           alloc:12, tier:'growth',   cat:'AI Chips',      reason:'The #2 AI chip company behind Nvidia. Builds custom AI accelerators (XPUs) for Google, Meta and Apple — hyperscalers paying to reduce Nvidia dependence. Also owns VMware software which prints cash. Morningstar rates it 44% undervalued vs fair value.' },
-  { ticker:'PLTR',  name:'Palantir',           alloc:8,  tier:'growth',   cat:'AI Software',   reason:'Only profitable pure-play AI software company. AIP (AI Platform) is winning US government and Fortune 500 enterprise contracts at accelerating pace. Revenue growth re-accelerating in 2026. A rare software moat in a hardware-heavy AI world.' },
-  { ticker:'CCJ',   name:'Cameco',             alloc:6,  tier:'growth',   cat:'Nuclear / AI',  reason:'AI data centers are triggering a nuclear renaissance — electricity demand up 25% by 2030. Cameco is the world\'s largest publicly traded uranium producer, up 800% in 5 years with earnings projected to grow 55% in 2026. Every hyperscaler is signing nuclear power deals.' },
-
-  // ── LONG SHOTS (3) — your mandated themes, 12% of capital ─────────────────
-  { ticker:'QS',    name:'QuantumScape',       alloc:6,  tier:'longshot', cat:'Battery Tech',  reason:'The furthest-along solid-state battery pure-play. Eagle Line production facility inaugurated Feb 2026. VW Group partnership with $131M in milestone payments now flowing. First customer billings received. Up 104% YTD. High risk — but if solid-state scales, this is the winner.' },
-  { ticker:'NNXPF', name:'NanoXplore',         alloc:3,  tier:'longshot', cat:'Graphene',      reason:'North America\'s only high-volume graphene powder manufacturer with actual revenue (~C$27M/quarter). Martinrea International (major auto Tier-1) is a strategic shareholder and captive customer. GrapheneBlack™ sheet molding plant CAPEX underway for 2026. The most commercially credible graphene pure-play.' },
-  { ticker:'GMG',   name:'Graphene Mfg Group', alloc:3,  tier:'longshot', cat:'Graphene / Battery', reason:'Unique dual-path story: THERMAL-XR commercial revenue today funds R&D on a graphene aluminium-ion battery that could be revolutionary. A graphene company with real products now AND a transformational moonshot in parallel. Highest upside in the graphene space if the battery scales.' },
+  { ticker:'NVDA',  name:'Nvidia',             alloc:22, tier:'core',     cat:'AI Chips',
+    reason:'The unavoidable backbone of every AI training and inference cluster on Earth. Blackwell GPU demand is outstripping supply through 2027. Trading at just 21x forward earnings — cheap for a company whose revenue is doubling YoY.' },
+  { ticker:'MSFT',  name:'Microsoft',          alloc:18, tier:'core',     cat:'Cloud / AI',
+    reason:'Most diversified AI exposure of any mega-cap: Azure (40% YoY growth), OpenAI partnership, Copilot across 400M Office seats, and GitHub. Consistent dividend grower with fortress balance sheet.' },
+  { ticker:'GOOGL', name:'Alphabet',           alloc:13, tier:'core',     cat:'Cloud / AI',
+    reason:'Gemini AI integrated into Search, Gmail, YouTube and GCP. Google Cloud signed OpenAI and Meta as customers in 2026. Trades at a meaningful P/E discount to MSFT despite comparable AI scale.' },
+  { ticker:'MU',    name:'Micron Technology',  alloc:9,  tier:'core',     cat:'AI Memory',
+    reason:'The only US-based manufacturer of HBM (High-Bandwidth Memory) — the critical ingredient inside every Nvidia GPU. Up 734% in 12 months as AI demand for HBM3E sends margins to record highs.' },
+  { ticker:'AVGO',  name:'Broadcom',           alloc:12, tier:'growth',   cat:'AI Chips',
+    reason:'#2 AI chip company behind Nvidia. Builds custom AI accelerators (XPUs) for Google, Meta and Apple. Also owns VMware software. Morningstar rates it 44% undervalued vs fair value.' },
+  { ticker:'PLTR',  name:'Palantir',           alloc:8,  tier:'growth',   cat:'AI Software',
+    reason:'Only profitable pure-play AI software company. AIP (AI Platform) winning US government and Fortune 500 enterprise contracts at accelerating pace. A rare software moat in a hardware-heavy AI world.' },
+  { ticker:'CCJ',   name:'Cameco',             alloc:6,  tier:'growth',   cat:'Nuclear / AI',
+    reason:'AI data centers are triggering a nuclear renaissance. Cameco is the world\'s largest publicly traded uranium producer, up 800% in 5 years. Every hyperscaler is signing nuclear power deals.' },
+  { ticker:'QS',    name:'QuantumScape',       alloc:6,  tier:'longshot', cat:'Battery Tech',
+    reason:'Furthest-along solid-state battery pure-play. Eagle Line production facility now operational. VW Group partnership with $131M in milestone payments. First customer billings received. Up 104% YTD.' },
+  { ticker:'NNXPF', name:'NanoXplore',         alloc:3,  tier:'longshot', cat:'Graphene',
+    reason:'North America\'s only high-volume graphene manufacturer with real revenue (~C$27M/qtr). Martinrea International is a strategic shareholder and captive customer. Most commercially credible graphene pure-play.' },
+  { ticker:'GMG',   name:'Graphene Mfg Group', alloc:3,  tier:'longshot', cat:'Graphene / Battery',
+    reason:'THERMAL-XR commercial revenue today funds R&D on a graphene aluminium-ion battery. A graphene company with real products now AND a transformational battery moonshot in parallel.' },
 ];
-
 const TOTAL_CAPITAL = 25000;
 
-// ─── STATE ──────────────────────────────────────────────────────────────────
-let priceData = {};
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let priceData   = {};   // { NVDA: { price, prev, chgPct, history[], projectStartIdx } }
+let selectedDay = '__today__';  // ISO date string or '__today__'
+let barInstance = null;
+let sparkInstances = {};
 let refreshTimer = null;
 let countdownInterval = null;
 let nextRefreshAt = null;
 
-// ─── MARKET HOURS CHECK ──────────────────────────────────────────────────────
+// ── MARKET HOURS ─────────────────────────────────────────────────────────────
 function isMarketOpen() {
-  const now = new Date();
-  const et = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-  const day = et.getDay();
-  const h = et.getHours(), m = et.getMinutes();
-  const mins = h * 60 + m;
-  return day >= 1 && day <= 5 && mins >= 570 && mins < 960; // 9:30–16:00 ET
+  const et = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const day = et.getDay(), mins = et.getHours()*60+et.getMinutes();
+  return day>=1 && day<=5 && mins>=570 && mins<960;
 }
-
 function updateMarketStatus() {
   const open = isMarketOpen();
-  const dot = document.getElementById('market-dot');
-  const label = document.getElementById('market-label');
-  dot.className = 'status-dot' + (open ? '' : ' closed');
-  label.textContent = open ? 'Market Open' : 'Market Closed';
+  document.getElementById('market-dot').className = 'status-dot'+(open?'':' closed');
+  document.getElementById('market-label').textContent = open ? 'Market Open' : 'Market Closed';
 }
 
-// ─── FETCH PRICES via YH Finance proxy ───────────────────────────────────────
-// PROJECT_START: the date this portfolio was created (July 12 2026)
-const PROJECT_START = new Date('2026-07-12T00:00:00');
-
-async function fetchPrice(ticker) {
-  try {
-    // 60 calendar days to guarantee 15+ pre-project trading days
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=60d`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const json = await res.json();
-    const result = json.chart.result[0];
-    const meta = result.meta;
-    const timestamps = result.timestamp || [];
-    const closes = result.indicators.quote[0].close || [];
-
-    // Build per-day objects with date labels
-    let days = timestamps.map((ts, i) => {
-      const d = new Date(ts * 1000);
-      const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      const isPreProject = d < PROJECT_START;
-      return { date: d, label, close: closes[i], preProject: isPreProject };
-    }).filter(d => d.close != null);
-
-    // Keep last 15 pre-project trading days + all days from project start onward
-    const preProject = days.filter(d => d.preProject).slice(-15);
-    const postProject = days.filter(d => !d.preProject);
-    const history = [...preProject, ...postProject];
-
-    const n = history.length;
-    const curr = meta.regularMarketPrice || history[n-1]?.close;
-    const prev = history[n-2]?.close || meta.previousClose;
-    const chgPct = prev ? ((curr - prev) / prev) * 100 : 0;
-
-    return {
-      price: curr,
-      prev,
-      chgPct,
-      history,                         // full labeled array
-      projectStartIdx: preProject.length  // index where project begins
-    };
-  } catch(e) {
-    return { price: null, prev: null, chgPct: null, history: [], projectStartIdx: 0 };
-  }
-}
-
-async function fetchAll() {
-  document.getElementById('refresh-btn').textContent = '↻ Updating...';
+// ── LOAD DATA FROM data.json (same-origin, no CORS) ──────────────────────────
+async function loadData() {
+  document.getElementById('refresh-btn').textContent = '↻ Loading…';
   document.getElementById('refresh-btn').disabled = true;
 
-  // Fetch all in parallel
-  const results = await Promise.all(PORTFOLIO.map(s => fetchPrice(s.ticker)));
-  results.forEach((r, i) => { priceData[PORTFOLIO[i].ticker] = r; });
+  try {
+    const res = await fetch('data.json?t='+Date.now());
+    if (!res.ok) throw new Error('data.json not found');
+    const raw = await res.json();
+    priceData = raw;
 
-  renderCards();
-  renderSummary();
-  renderBarChart();
+    // Populate day selector from NVDA's history (all tickers share same trading days)
+    populateDaySelector();
+    renderAll();
+
+    // Show data age
+    const sample = Object.values(priceData)[0];
+    if (sample?.fetchedAt) {
+      const age = new Date(sample.fetchedAt);
+      document.getElementById('data-age').textContent =
+        'Data as of ' + age.toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',timeZoneName:'short'});
+    }
+  } catch(e) {
+    console.error('Failed to load data.json:', e);
+    document.getElementById('footer').textContent = 'Error loading data.json — ' + e.message;
+  }
+
+  document.getElementById('footer').textContent =
+    'Last refreshed: ' + new Date().toLocaleString() + ' — Data via Yahoo Finance / GitHub Action';
+  document.getElementById('refresh-btn').textContent = '↻ Refresh';
+  document.getElementById('refresh-btn').disabled = false;
+
   updateMarketStatus();
   scheduleNext();
-
-  const now = new Date();
-  document.getElementById('footer').textContent =
-    `Last updated: ${now.toLocaleString()} — Data via Yahoo Finance`;
-  document.getElementById('refresh-btn').textContent = '↻ Refresh Now';
-  document.getElementById('refresh-btn').disabled = false;
 }
 
-// ─── SCHEDULE NEXT REFRESH (every 30 min during market hours) ────────────────
-function scheduleNext() {
-  if (refreshTimer) clearTimeout(refreshTimer);
-  if (countdownInterval) clearInterval(countdownInterval);
+// ── DAY SELECTOR ─────────────────────────────────────────────────────────────
+function populateDaySelector() {
+  const sel = document.getElementById('day-select');
+  const prev = sel.value;
 
-  const INTERVAL = 30 * 60 * 1000; // 30 min
-  nextRefreshAt = Date.now() + INTERVAL;
+  // Gather all unique dates across portfolio history
+  const dateSet = new Set();
+  PORTFOLIO.forEach(s => {
+    const pd = priceData[s.ticker];
+    if (pd?.history) pd.history.forEach(h => dateSet.add(h.date));
+  });
+  const dates = Array.from(dateSet).sort();
 
-  refreshTimer = setTimeout(() => {
-    if (isMarketOpen()) fetchAll();
-    else scheduleNext();
-  }, INTERVAL);
+  sel.innerHTML = '<option value="__today__">Today (latest)</option>';
+  // Add in reverse chronological order (newest first, skip last as it = Today)
+  [...dates].reverse().slice(1).forEach(d => {
+    const pd = priceData['NVDA'];
+    const dayEntry = pd?.history?.find(h => h.date === d);
+    const label = dayEntry ? dayEntry.label : d;
+    const isPreProject = dayEntry?.preProject;
+    const opt = document.createElement('option');
+    opt.value = d;
+    opt.textContent = label + (isPreProject ? ' ⬡ pre-project' : '');
+    sel.appendChild(opt);
+  });
 
-  countdownInterval = setInterval(() => {
-    const rem = Math.max(0, Math.floor((nextRefreshAt - Date.now()) / 1000));
-    const mm = String(Math.floor(rem / 60)).padStart(2, '0');
-    const ss = String(rem % 60).padStart(2, '0');
-    document.getElementById('next-refresh').textContent = `Next: ${mm}:${ss}`;
-  }, 1000);
+  // Restore selection if still valid
+  if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
 }
 
-// ─── RENDER STOCK CARDS ────────────────────────────────────────────────────
-let currentFilter = 'all';
+function onDayChange() {
+  selectedDay = document.getElementById('day-select').value;
+  renderBarChart();
+}
 
-function filterCards(filter, btn) {
-  currentFilter = filter;
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.stock-card').forEach(c => {
-    c.style.display = (filter === 'all' || c.dataset.tier === filter) ? '' : 'none';
+// ── RENDER ALL ────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderSummary();
+  renderBarChart();
+  renderCards();
+}
+
+// ── SUMMARY STRIP ─────────────────────────────────────────────────────────────
+function renderSummary() {
+  let totalCurrent = 0;
+  let best = null, worst = null;
+  PORTFOLIO.forEach(s => {
+    const pd = priceData[s.ticker] || {};
+    const dollars = TOTAL_CAPITAL * (s.alloc/100);
+    if (pd.price && pd.prev) {
+      totalCurrent += dollars * (pd.price/pd.prev);
+    } else {
+      totalCurrent += dollars;
+    }
+    const chg = pd.chgPct;
+    if (chg != null) {
+      if (!best || chg > best.chg) best = {ticker:s.ticker, chg};
+      if (!worst || chg < worst.chg) worst = {ticker:s.ticker, chg};
+    }
+  });
+  const diff = totalCurrent - TOTAL_CAPITAL;
+  const pct = (diff/TOTAL_CAPITAL)*100;
+  const el = v => document.getElementById(v);
+  el('port-current').textContent = '$'+totalCurrent.toLocaleString(undefined,{maximumFractionDigits:0});
+  el('port-current').className = 'sum-value '+(diff>=0?'up':'dn');
+  el('port-change-label').textContent = (diff>=0?'+':'')+'$'+diff.toFixed(0)+' ('+pct.toFixed(2)+'%) vs prev close';
+  el('port-change-label').className = 'sum-sub '+(diff>=0?'up':'dn');
+  if (best) { el('best-ticker').textContent=best.ticker; el('best-chg').textContent='+'+best.chg.toFixed(2)+'% today'; }
+  if (worst) { el('worst-ticker').textContent=worst.ticker; el('worst-chg').textContent=worst.chg.toFixed(2)+'% today'; }
+}
+
+// ── BAR CHART ─────────────────────────────────────────────────────────────────
+function getChangeForDay(ticker, day) {
+  const pd = priceData[ticker];
+  if (!pd?.history?.length) return null;
+  if (day === '__today__') return pd.chgPct ?? null;
+  // Find the day in history and the previous day
+  const idx = pd.history.findIndex(h => h.date === day);
+  if (idx < 1) return null;
+  const curr = pd.history[idx].close;
+  const prev = pd.history[idx-1].close;
+  return prev ? ((curr-prev)/prev)*100 : null;
+}
+
+function renderBarChart() {
+  const changes = PORTFOLIO.map(s => {
+    const v = getChangeForDay(s.ticker, selectedDay);
+    return v != null ? parseFloat(v.toFixed(3)) : null;
+  });
+  const colors = PORTFOLIO.map((s,i) => {
+    const v = changes[i];
+    if (v === null) return 'rgba(100,116,139,0.4)';
+    if (s.tier==='core')     return v>=0 ? 'rgba(16,185,129,0.8)' : 'rgba(239,68,68,0.8)';
+    if (s.tier==='growth')   return v>=0 ? 'rgba(0,212,255,0.8)'  : 'rgba(239,68,68,0.8)';
+    return                          v>=0 ? 'rgba(245,158,11,0.85)': 'rgba(239,68,68,0.8)';
+  });
+  const allVals = changes.filter(v=>v!==null);
+  const minVal = allVals.length ? Math.min(...allVals) : -1;
+  const maxVal = allVals.length ? Math.max(...allVals) : 1;
+  const pad = Math.max(0.5,(maxVal-minVal)*0.15);
+
+  // Determine if viewing a pre-project day
+  let dayLabel = 'Today';
+  if (selectedDay !== '__today__') {
+    const ref = priceData['NVDA']?.history?.find(h=>h.date===selectedDay);
+    dayLabel = ref ? ref.label + (ref.preProject ? ' ⬡ Pre-Project' : '') : selectedDay;
+  }
+
+  if (barInstance) { barInstance.destroy(); barInstance=null; }
+  const canvas = document.getElementById('bar-chart');
+  if (!canvas) return;
+  barInstance = new Chart(canvas.getContext('2d'), {
+    type:'bar',
+    data:{
+      labels: PORTFOLIO.map(s=>s.ticker),
+      datasets:[{
+        data:changes, backgroundColor:colors,
+        borderRadius:3, borderSkipped:false, barPercentage:0.72
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        title:{
+          display:true,
+          text: dayLabel,
+          color:'#64748b', font:{size:11,family:'Space Mono'},
+          padding:{bottom:8}
+        },
+        tooltip:{
+          backgroundColor:'#161d2e', borderColor:'#1e2d45', borderWidth:1,
+          callbacks:{
+            label: ctx => {
+              const v = ctx.parsed.y;
+              return v != null ? ` ${v>=0?'+':''}${v.toFixed(2)}%` : ' No data';
+            }
+          }
+        }
+      },
+      scales:{
+        x:{ ticks:{color:'#64748b',font:{size:9,family:'Space Mono'},maxRotation:45,minRotation:45}, grid:{color:'#1e2d45'} },
+        y:{
+          min:minVal-pad, max:maxVal+pad,
+          ticks:{color:'#64748b',font:{size:10},callback:v=>(v>0?'+':'')+v.toFixed(1)+'%'},
+          grid:{
+            color: ctx => ctx.tick.value===0 ? 'rgba(255,255,255,0.2)' : '#1e2d45',
+            lineWidth: ctx => ctx.tick.value===0 ? 1.5 : 1
+          }
+        }
+      }
+    }
   });
 }
 
-const SPARKLINE_INSTANCES = {};
+// ── STOCK CARDS + SPARKLINES ──────────────────────────────────────────────────
+let currentFilter = 'all';
+function filterCards(f,btn) {
+  currentFilter=f;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.stock-card').forEach(c=>{
+    c.style.display=(f==='all'||c.dataset.tier===f)?'':'none';
+  });
+}
 
 function renderCards() {
   const grid = document.getElementById('stock-grid');
   grid.innerHTML = '';
+  Object.values(sparkInstances).forEach(ch=>{ try{ch.destroy();}catch(e){} });
+  sparkInstances = {};
 
   PORTFOLIO.forEach(stock => {
     const pd = priceData[stock.ticker] || {};
     const price = pd.price;
     const chg = pd.chgPct;
-    const dollars = TOTAL_CAPITAL * (stock.alloc / 100);
-
-    const priceStr = price != null ? `$${price.toFixed(2)}` : '—';
-    const chgStr = chg != null ? `${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%` : '—';
-    const chgClass = chg == null ? '' : chg >= 0 ? 'up' : 'dn';
-    const tierLabel = stock.tier === 'core' ? 'Core' : stock.tier === 'growth' ? 'Growth' : 'Long Shot';
+    const dollars = TOTAL_CAPITAL*(stock.alloc/100);
+    const priceStr = price!=null ? '$'+price.toFixed(2) : '—';
+    const chgStr   = chg!=null   ? (chg>=0?'+':'')+chg.toFixed(2)+'%' : '—';
+    const chgClass = chg==null?'':(chg>=0?'up':'dn');
+    const tierLabel = {core:'Core',growth:'Growth',longshot:'Long Shot'}[stock.tier];
+    const badgeClass = {core:'core',growth:'growth',longshot:'longshot'}[stock.tier];
 
     const card = document.createElement('div');
     card.className = `stock-card tier-${stock.tier}`;
     card.dataset.tier = stock.tier;
-    if (currentFilter !== 'all' && stock.tier !== currentFilter) card.style.display = 'none';
+    if (currentFilter!=='all'&&stock.tier!==currentFilter) card.style.display='none';
 
     card.innerHTML = `
       <div class="card-top">
-        <div class="ticker-block">
-          <div class="ticker">${stock.ticker}</div>
-          <div class="company-name">${stock.name}</div>
-        </div>
-        <span class="tier-badge ${stock.tier === 'core' ? 'core' : stock.tier === 'longshot' ? 'longshot' : 'growth'}">${tierLabel}</span>
+        <div><div class="ticker">${stock.ticker}</div><div class="company-name">${stock.name}</div></div>
+        <span class="tier-badge ${badgeClass}">${tierLabel}</span>
       </div>
       <div class="price-row">
         <span class="price">${priceStr}</span>
         <span class="change-pct ${chgClass}">${chgStr}</span>
       </div>
       <div class="alloc-row">
-        <span>Allocation: <span class="alloc-val">${stock.alloc}%</span></span>
-        <span>Invested: <span class="alloc-val">$${dollars.toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0})}</span></span>
-        <span class="error-note">${stock.cat}</span>
+        <span>Alloc: <span class="alloc-val">${stock.alloc}%</span></span>
+        <span>$<span class="alloc-val">${dollars.toLocaleString(undefined,{maximumFractionDigits:0})}</span></span>
+        <span class="cat-tag">${stock.cat}</span>
       </div>
-      <div class="alloc-bar"><div class="alloc-bar-fill" style="width:${Math.min(stock.alloc * 5, 100)}%"></div></div>
-      <div class="mini-chart-wrap" style="height:80px;">
-        <canvas class="sparkline" id="spark-${stock.ticker}" style="height:80px;"></canvas>
+      <div class="alloc-bar"><div class="alloc-bar-fill" style="width:${Math.min(stock.alloc*4.5,100)}%"></div></div>
+      <div class="spark-wrap" id="sw-${stock.ticker}">
+        <canvas id="spark-${stock.ticker}"></canvas>
       </div>
-      <div class="reason">${stock.reason}</div>
-    `;
-
+      <div class="reason">${stock.reason}</div>`;
     grid.appendChild(card);
 
-    // Draw sparkline after DOM insert
-    setTimeout(() => {
-      const canvas = document.getElementById(`spark-${stock.ticker}`);
-      if (!canvas) return;
-
-      const history = pd.history && pd.history.length > 1 ? pd.history : [];
-      const projectStartIdx = pd.projectStartIdx || 0;
-      const closes = history.map(d => d.close);
-      const labels  = history.map(d => d.label);
-
-      const postCloses = closes.slice(projectStartIdx);
-      const refClose = postCloses.length ? postCloses[0] : (closes[closes.length - 1] || 0);
-      const lastClose = closes[closes.length - 1] || 0;
-      const isUp = lastClose >= refClose;
-
-      const ctx = canvas.getContext('2d');
-
-      // Gradient for post-project line fill
-      const grad = ctx.createLinearGradient(0, 0, 0, 80);
-      grad.addColorStop(0, isUp ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)');
-      grad.addColorStop(1, 'rgba(0,0,0,0)');
-
-      // Pre-project segment (muted)
-      const preData  = closes.map((v, i) => i < projectStartIdx ? v : null);
-      // Post-project segment (colored)
-      const postData = closes.map((v, i) => i >= projectStartIdx ? v : null);
-
-      if (SPARKLINE_INSTANCES[stock.ticker]) {
-        SPARKLINE_INSTANCES[stock.ticker].destroy();
-      }
-
-      // Plugin: draw shaded pre-project region + vertical divider
-      const preProjectPlugin = {
-        id: 'preProjectRegion',
-        beforeDraw(chart) {
-          if (projectStartIdx <= 0) return;
-          const { ctx: c, chartArea, scales } = chart;
-          // Calculate x position of the divider
-          const xScale = scales.x;
-          const divX = xScale.getPixelForValue(projectStartIdx - 0.5);
-          // Shade pre-project region
-          c.save();
-          c.fillStyle = 'rgba(100,116,139,0.08)';
-          c.fillRect(chartArea.left, chartArea.top, divX - chartArea.left, chartArea.bottom - chartArea.top);
-          // Dashed vertical line
-          c.strokeStyle = 'rgba(0,212,255,0.5)';
-          c.lineWidth = 1;
-          c.setLineDash([3, 3]);
-          c.beginPath();
-          c.moveTo(divX, chartArea.top);
-          c.lineTo(divX, chartArea.bottom);
-          c.stroke();
-          c.setLineDash([]);
-          // Label "Pre-Project" in the shaded zone
-          if (divX - chartArea.left > 30) {
-            c.fillStyle = 'rgba(100,116,139,0.7)';
-            c.font = '8px Space Mono, monospace';
-            c.textAlign = 'center';
-            c.fillText('PRE-PROJECT', chartArea.left + (divX - chartArea.left) / 2, chartArea.top + 10);
-          }
-          c.restore();
-        }
-      };
-
-      SPARKLINE_INSTANCES[stock.ticker] = new Chart(ctx, {
-        type: 'line',
-        plugins: [preProjectPlugin],
-        data: {
-          labels,
-          datasets: [
-            {
-              // Pre-project: muted gray
-              data: preData,
-              borderColor: 'rgba(100,116,139,0.5)',
-              borderWidth: 1,
-              backgroundColor: 'transparent',
-              fill: false,
-              tension: 0.3,
-              pointRadius: 0,
-              spanGaps: false,
-            },
-            {
-              // Post-project: colored with fill
-              data: postData,
-              borderColor: isUp ? '#10b981' : '#ef4444',
-              borderWidth: 1.5,
-              backgroundColor: grad,
-              fill: true,
-              tension: 0.3,
-              pointRadius: 0,
-              spanGaps: false,
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              enabled: true,
-              mode: 'index',
-              intersect: false,
-              backgroundColor: '#161d2e',
-              borderColor: '#1e2d45',
-              borderWidth: 1,
-              titleColor: '#64748b',
-              bodyColor: '#e2e8f0',
-              titleFont: { size: 9, family: 'Space Mono' },
-              bodyFont: { size: 10, family: 'Space Mono' },
-              callbacks: {
-                title: items => {
-                  const idx = items[0].dataIndex;
-                  const tag = idx < projectStartIdx ? '⬡ Pre-Project' : '★ Live';
-                  return `${labels[idx]}  ${tag}`;
-                },
-                label: items => {
-                  const v = items.raw;
-                  return v != null ? ` $${v.toFixed(2)}` : null;
-                }
-              }
-            }
-          },
-          scales: { x: { display: false }, y: { display: false } }
-        }
-      });
-    }, 50);
+    // Draw sparkline once DOM is ready
+    setTimeout(() => drawSparkline(stock, pd), 60);
   });
 }
 
-// ─── SUMMARY STRIP ─────────────────────────────────────────────────────────
-function renderSummary() {
-  let totalCurrent = 0;
-  let best = null, worst = null;
-
-  PORTFOLIO.forEach(s => {
-    const pd = priceData[s.ticker] || {};
-    if (pd.price && pd.prev) {
-      const dollars = TOTAL_CAPITAL * (s.alloc / 100);
-      const ratio = pd.price / pd.prev;
-      totalCurrent += dollars * ratio;
-    } else {
-      totalCurrent += TOTAL_CAPITAL * (s.alloc / 100);
-    }
-    const chg = pd.chgPct;
-    if (chg != null) {
-      if (!best || chg > best.chg) best = { ticker: s.ticker, chg };
-      if (!worst || chg < worst.chg) worst = { ticker: s.ticker, chg };
-    }
-  });
-
-  const diff = totalCurrent - TOTAL_CAPITAL;
-  const diffPct = (diff / TOTAL_CAPITAL) * 100;
-  document.getElementById('port-current').textContent = `$${totalCurrent.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0})}`;
-  document.getElementById('port-current').className = `sum-value ${diff >= 0 ? 'up' : 'dn'}`;
-  document.getElementById('port-change-label').textContent = `${diff >= 0 ? '+' : ''}$${diff.toFixed(0)} (${diffPct.toFixed(2)}%) today`;
-  document.getElementById('port-change-label').className = `sum-sub ${diff >= 0 ? 'up' : 'dn'}`;
-
-  if (best) {
-    document.getElementById('best-ticker').textContent = best.ticker;
-    document.getElementById('best-chg').textContent = `+${best.chg.toFixed(2)}% today`;
-  }
-  if (worst) {
-    document.getElementById('worst-ticker').textContent = worst.ticker;
-    document.getElementById('worst-chg').textContent = `${worst.chg.toFixed(2)}% today`;
-  }
-}
-
-// ─── DONUT CHART ───────────────────────────────────────────────────────────
-const CATS = [
-  { name: 'Tech / AI',      color: '#00d4ff' },
-  { name: 'Consumer Tech',  color: '#7c3aed' },
-  { name: 'Clean Energy',   color: '#10b981' },
-  { name: 'Finance',        color: '#3b82f6' },
-  { name: 'Healthcare',     color: '#ec4899' },
-  { name: 'Defense',        color: '#64748b' },
-  { name: 'Energy',         color: '#f59e0b' },
-  { name: 'Nuclear',        color: '#8b5cf6' },
-  { name: 'Cybersecurity',  color: '#06b6d4' },
-  { name: 'Diversified',    color: '#94a3b8' },
-  { name: 'Battery Tech',   color: '#fbbf24' },
-  { name: 'Graphene',       color: '#34d399' },
-  { name: 'AI / BioTech',   color: '#f472b6' },
-];
-
-function initDonut() {
-  const catTotals = {};
-  PORTFOLIO.forEach(s => {
-    catTotals[s.cat] = (catTotals[s.cat] || 0) + s.alloc;
-  });
-
-  const labels = Object.keys(catTotals);
-  const data = labels.map(l => catTotals[l]);
-  const colors = labels.map(l => (CATS.find(c => c.name === l) || { color: '#888' }).color);
-
-  new Chart(document.getElementById('donut-chart').getContext('2d'), {
-    type: 'doughnut',
-    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 0, hoverOffset: 6 }] },
-    options: {
-      cutout: '68%', responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => ` ${ctx.label}: ${ctx.parsed}%  ($${(TOTAL_CAPITAL * ctx.parsed / 100).toFixed(0)})`
-          }
-        }
-      }
-    }
-  });
-
-  // Legend
-  const leg = document.getElementById('cat-legend');
-  leg.innerHTML = '';
-  labels.forEach((l, i) => {
-    leg.innerHTML += `<div class="cat-item">
-      <div class="cat-dot" style="background:${colors[i]}"></div>
-      <span class="cat-name">${l}</span>
-      <span class="cat-pct">${data[i]}%</span>
-    </div>`;
-  });
-}
-
-// ─── BAR CHART ─────────────────────────────────────────────────────────────
-let barInstance = null;
-function renderBarChart() {
-  const tickers = PORTFOLIO.map(s => s.ticker);
-  const changes = PORTFOLIO.map(s => {
-    const pd = priceData[s.ticker] || {};
-    return pd.chgPct != null ? parseFloat(pd.chgPct.toFixed(3)) : null;
-  });
-
-  // Color by tier, shade by direction
-  const colors = PORTFOLIO.map((s, i) => {
-    const v = changes[i];
-    if (v === null) return 'rgba(100,116,139,0.4)';
-    if (s.tier === 'core')     return v >= 0 ? 'rgba(16,185,129,0.8)'  : 'rgba(239,68,68,0.8)';
-    if (s.tier === 'growth')   return v >= 0 ? 'rgba(0,212,255,0.8)'   : 'rgba(239,68,68,0.8)';
-    return                            v >= 0 ? 'rgba(245,158,11,0.85)' : 'rgba(239,68,68,0.8)';
-  });
-
-  const allVals = changes.filter(v => v !== null);
-  const minVal = allVals.length ? Math.min(...allVals) : -1;
-  const maxVal = allVals.length ? Math.max(...allVals) : 1;
-  const pad = Math.max(0.5, (maxVal - minVal) * 0.15);
-
-  if (barInstance) { barInstance.destroy(); barInstance = null; }
-
-  const canvas = document.getElementById('bar-chart');
+function drawSparkline(stock, pd) {
+  const canvas = document.getElementById(`spark-${stock.ticker}`);
   if (!canvas) return;
-  barInstance = new Chart(canvas.getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: tickers,
-      datasets: [{
-        data: changes,
-        backgroundColor: colors,
-        borderRadius: 3,
-        borderSkipped: false,
-        barPercentage: 0.75,
-      }]
+  const history = pd.history || [];
+  if (history.length < 2) {
+    canvas.parentElement.innerHTML = '<div style="height:90px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);font-family:var(--font-mono);">No history data</div>';
+    return;
+  }
+
+  const projectStartIdx = pd.projectStartIdx ?? history.length;
+  const closes = history.map(h=>h.close);
+  const labels  = history.map(h=>h.label);
+
+  // Color based on direction since project start
+  const refClose  = closes[projectStartIdx] ?? closes[0];
+  const lastClose = closes[closes.length-1];
+  const isUp = lastClose >= refClose;
+  const lineColor = isUp ? '#10b981' : '#ef4444';
+
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,0,90);
+  grad.addColorStop(0, isUp ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+  // Two datasets: pre-project (muted) and post-project (colored)
+  const preData  = closes.map((v,i) => i<projectStartIdx  ? v : null);
+  const postData = closes.map((v,i) => i>=projectStartIdx ? v : null);
+
+  // Custom plugin: shaded region + dashed divider + "PRE-PROJECT" label
+  const prePlugin = {
+    id:'preRegion',
+    beforeDraw(chart) {
+      if (projectStartIdx<=0 || projectStartIdx>=history.length) return;
+      const {ctx:c,chartArea,scales} = chart;
+      const divX = scales.x.getPixelForValue(projectStartIdx-0.5);
+      const W = divX - chartArea.left;
+      c.save();
+      // Shaded zone
+      c.fillStyle = 'rgba(100,116,139,0.07)';
+      c.fillRect(chartArea.left, chartArea.top, W, chartArea.bottom-chartArea.top);
+      // Dashed line
+      c.strokeStyle = 'rgba(0,212,255,0.45)';
+      c.lineWidth=1; c.setLineDash([3,3]);
+      c.beginPath(); c.moveTo(divX,chartArea.top); c.lineTo(divX,chartArea.bottom); c.stroke();
+      c.setLineDash([]);
+      // Label
+      if (W>32) {
+        c.fillStyle='rgba(100,116,139,0.65)';
+        c.font='7px Space Mono,monospace';
+        c.textAlign='center';
+        c.fillText('PRE-PROJECT', chartArea.left+W/2, chartArea.top+9);
+      }
+      c.restore();
+    }
+  };
+
+  if (sparkInstances[stock.ticker]) { try{sparkInstances[stock.ticker].destroy();}catch(e){} }
+
+  sparkInstances[stock.ticker] = new Chart(ctx, {
+    type:'line',
+    plugins:[prePlugin],
+    data:{
+      labels,
+      datasets:[
+        { data:preData,  borderColor:'rgba(100,116,139,0.45)', borderWidth:1, backgroundColor:'transparent', fill:false, tension:0.3, pointRadius:0, spanGaps:false },
+        { data:postData, borderColor:lineColor, borderWidth:1.5, backgroundColor:grad, fill:true, tension:0.3, pointRadius:0, spanGaps:false }
+      ]
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#161d2e',
-          borderColor: '#1e2d45',
-          borderWidth: 1,
-          callbacks: {
-            label: ctx => {
-              const v = ctx.parsed.y;
-              return v !== null ? ` ${v >= 0 ? '+' : ''}${v.toFixed(2)}%` : ' No data';
-            }
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          enabled:true, mode:'index', intersect:false,
+          backgroundColor:'#161d2e', borderColor:'#1e2d45', borderWidth:1,
+          titleColor:'#64748b', bodyColor:'#e2e8f0',
+          titleFont:{size:9,family:'Space Mono'}, bodyFont:{size:10,family:'Space Mono'},
+          callbacks:{
+            title: items => {
+              const i=items[0].dataIndex;
+              const tag = i<projectStartIdx ? ' ⬡ Pre-Project' : ' ★ Live';
+              return labels[i]+tag;
+            },
+            label: item => item.raw!=null ? ` $${item.raw.toFixed(2)}` : null
           }
         }
       },
-      scales: {
-        x: {
-          ticks: { color: '#64748b', font: { size: 9, family: 'Space Mono' }, maxRotation: 45, minRotation: 45 },
-          grid: { color: '#1e2d45' }
-        },
-        y: {
-          min: minVal - pad,
-          max: maxVal + pad,
-          ticks: {
-            color: '#64748b',
-            font: { size: 10 },
-            callback: v => (v > 0 ? '+' : '') + v.toFixed(1) + '%'
-          },
-          grid: {
-            color: ctx => ctx.tick.value === 0 ? 'rgba(255,255,255,0.2)' : '#1e2d45',
-            lineWidth: ctx => ctx.tick.value === 0 ? 1.5 : 1,
-          }
-        }
-      }
+      scales:{ x:{display:false}, y:{display:false} }
     }
   });
 }
 
-// ─── INIT ────────────────────────────────────────────────────────────────────
+// ── DONUT ─────────────────────────────────────────────────────────────────────
+const CAT_COLORS = {
+  'AI Chips':'#00d4ff','Cloud / AI':'#7c3aed','AI Memory':'#06b6d4',
+  'AI Software':'#8b5cf6','Nuclear / AI':'#f59e0b',
+  'Battery Tech':'#fbbf24','Graphene':'#34d399','Graphene / Battery':'#10b981'
+};
+function initDonut() {
+  const totals={};
+  PORTFOLIO.forEach(s=>{ totals[s.cat]=(totals[s.cat]||0)+s.alloc; });
+  const labels=Object.keys(totals), data=labels.map(l=>totals[l]);
+  const colors=labels.map(l=>CAT_COLORS[l]||'#888');
+  new Chart(document.getElementById('donut-chart').getContext('2d'),{
+    type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:0,hoverOffset:6}]},
+    options:{cutout:'68%',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${ctx.parsed}%  ($${(TOTAL_CAPITAL*ctx.parsed/100).toFixed(0)})`}}}}
+  });
+  const leg=document.getElementById('cat-legend');
+  leg.innerHTML='';
+  labels.forEach((l,i)=>{
+    leg.innerHTML+=`<div class="cat-item"><div class="cat-dot" style="background:${colors[i]}"></div><span class="cat-name">${l}</span><span class="cat-pct">${data[i]}%</span></div>`;
+  });
+}
+
+// ── SCHEDULER ─────────────────────────────────────────────────────────────────
+function scheduleNext() {
+  if (refreshTimer) clearTimeout(refreshTimer);
+  if (countdownInterval) clearInterval(countdownInterval);
+  const INTERVAL = 30*60*1000;
+  nextRefreshAt = Date.now()+INTERVAL;
+  refreshTimer = setTimeout(()=>{ if(isMarketOpen()) loadData(); else scheduleNext(); }, INTERVAL);
+  countdownInterval = setInterval(()=>{
+    const rem=Math.max(0,Math.floor((nextRefreshAt-Date.now())/1000));
+    const mm=String(Math.floor(rem/60)).padStart(2,'0'), ss=String(rem%60).padStart(2,'0');
+    document.getElementById('next-refresh').textContent=`Next: ${mm}:${ss}`;
+  },1000);
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────────────
 initDonut();
-renderCards();
-updateMarketStatus();
-fetchAll(); // renderBarChart() is called inside fetchAll after prices arrive
+loadData();
 </script>
 </body>
 </html>

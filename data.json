@@ -1,0 +1,992 @@
+{
+  "NVDA": {
+    "price": 210.96,
+    "prev": 202.78,
+    "chgPct": 4.0339,
+    "projectStartIdx": 15,
+    "history": [
+      {
+        "date": "2026-06-18",
+        "label": "Jun 18",
+        "close": 210.69,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-22",
+        "label": "Jun 22",
+        "close": 208.65,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-23",
+        "label": "Jun 23",
+        "close": 200.04,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-24",
+        "label": "Jun 24",
+        "close": 199.0,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-25",
+        "label": "Jun 25",
+        "close": 195.74,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-26",
+        "label": "Jun 26",
+        "close": 192.53,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-29",
+        "label": "Jun 29",
+        "close": 194.97,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-30",
+        "label": "Jun 30",
+        "close": 200.09,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-01",
+        "label": "Jul 01",
+        "close": 197.58,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-02",
+        "label": "Jul 02",
+        "close": 194.83,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-06",
+        "label": "Jul 06",
+        "close": 195.55,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-07",
+        "label": "Jul 07",
+        "close": 196.93,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-08",
+        "label": "Jul 08",
+        "close": 204.12,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-09",
+        "label": "Jul 09",
+        "close": 202.78,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-10",
+        "label": "Jul 10",
+        "close": 210.96,
+        "preProject": true
+      }
+    ],
+    "fetchedAt": "2026-07-12T23:54:21.613436+00:00"
+  },
+  "MSFT": {
+    "price": 385.1,
+    "prev": 384.36,
+    "chgPct": 0.1925,
+    "projectStartIdx": 15,
+    "history": [
+      {
+        "date": "2026-06-18",
+        "label": "Jun 18",
+        "close": 379.4,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-22",
+        "label": "Jun 22",
+        "close": 367.34,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-23",
+        "label": "Jun 23",
+        "close": 373.94,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-24",
+        "label": "Jun 24",
+        "close": 365.46,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-25",
+        "label": "Jun 25",
+        "close": 352.83,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-26",
+        "label": "Jun 26",
+        "close": 372.97,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-29",
+        "label": "Jun 29",
+        "close": 368.57,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-30",
+        "label": "Jun 30",
+        "close": 373.02,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-01",
+        "label": "Jul 01",
+        "close": 384.28,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-02",
+        "label": "Jul 02",
+        "close": 390.49,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-06",
+        "label": "Jul 06",
+        "close": 386.74,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-07",
+        "label": "Jul 07",
+        "close": 388.84,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-08",
+        "label": "Jul 08",
+        "close": 383.34,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-09",
+        "label": "Jul 09",
+        "close": 384.36,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-10",
+        "label": "Jul 10",
+        "close": 385.1,
+        "preProject": true
+      }
+    ],
+    "fetchedAt": "2026-07-12T23:54:22.624538+00:00"
+  },
+  "GOOGL": {
+    "price": 357.18,
+    "prev": 358.89,
+    "chgPct": -0.4765,
+    "projectStartIdx": 15,
+    "history": [
+      {
+        "date": "2026-06-18",
+        "label": "Jun 18",
+        "close": 368.03,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-22",
+        "label": "Jun 22",
+        "close": 349.68,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-23",
+        "label": "Jun 23",
+        "close": 346.13,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-24",
+        "label": "Jun 24",
+        "close": 345.29,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-25",
+        "label": "Jun 25",
+        "close": 343.71,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-26",
+        "label": "Jun 26",
+        "close": 337.39,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-29",
+        "label": "Jun 29",
+        "close": 353.65,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-30",
+        "label": "Jun 30",
+        "close": 357.37,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-01",
+        "label": "Jul 01",
+        "close": 361.21,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-02",
+        "label": "Jul 02",
+        "close": 359.91,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-06",
+        "label": "Jul 06",
+        "close": 366.46,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-07",
+        "label": "Jul 07",
+        "close": 367.03,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-08",
+        "label": "Jul 08",
+        "close": 361.92,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-09",
+        "label": "Jul 09",
+        "close": 358.89,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-10",
+        "label": "Jul 10",
+        "close": 357.18,
+        "preProject": true
+      }
+    ],
+    "fetchedAt": "2026-07-12T23:54:23.565107+00:00"
+  },
+  "MU": {
+    "price": 979.3,
+    "prev": 991.64,
+    "chgPct": -1.2444,
+    "projectStartIdx": 15,
+    "history": [
+      {
+        "date": "2026-06-18",
+        "label": "Jun 18",
+        "close": 1133.99,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-22",
+        "label": "Jun 22",
+        "close": 1211.38,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-23",
+        "label": "Jun 23",
+        "close": 1051.77,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-24",
+        "label": "Jun 24",
+        "close": 1048.51,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-25",
+        "label": "Jun 25",
+        "close": 1213.5601,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-26",
+        "label": "Jun 26",
+        "close": 1132.33,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-29",
+        "label": "Jun 29",
+        "close": 1145.28,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-30",
+        "label": "Jun 30",
+        "close": 1154.29,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-01",
+        "label": "Jul 01",
+        "close": 1032.28,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-02",
+        "label": "Jul 02",
+        "close": 975.56,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-06",
+        "label": "Jul 06",
+        "close": 984.75,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-07",
+        "label": "Jul 07",
+        "close": 938.38,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-08",
+        "label": "Jul 08",
+        "close": 948.8,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-09",
+        "label": "Jul 09",
+        "close": 991.64,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-10",
+        "label": "Jul 10",
+        "close": 979.3,
+        "preProject": true
+      }
+    ],
+    "fetchedAt": "2026-07-12T23:54:24.538368+00:00"
+  },
+  "AVGO": {
+    "price": 399.97,
+    "prev": 401.11,
+    "chgPct": -0.2842,
+    "projectStartIdx": 15,
+    "history": [
+      {
+        "date": "2026-06-18",
+        "label": "Jun 18",
+        "close": 411.35,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-22",
+        "label": "Jun 22",
+        "close": 392.13,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-23",
+        "label": "Jun 23",
+        "close": 380.15,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-24",
+        "label": "Jun 24",
+        "close": 382.07,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-25",
+        "label": "Jun 25",
+        "close": 378.91,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-26",
+        "label": "Jun 26",
+        "close": 365.02,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-29",
+        "label": "Jun 29",
+        "close": 372.45,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-30",
+        "label": "Jun 30",
+        "close": 377.75,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-01",
+        "label": "Jul 01",
+        "close": 369.34,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-02",
+        "label": "Jul 02",
+        "close": 360.45,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-06",
+        "label": "Jul 06",
+        "close": 373.9,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-07",
+        "label": "Jul 07",
+        "close": 370.78,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-08",
+        "label": "Jul 08",
+        "close": 388.69,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-09",
+        "label": "Jul 09",
+        "close": 401.11,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-10",
+        "label": "Jul 10",
+        "close": 399.97,
+        "preProject": true
+      }
+    ],
+    "fetchedAt": "2026-07-12T23:54:25.417969+00:00"
+  },
+  "PLTR": {
+    "price": 126.79,
+    "prev": 129.04,
+    "chgPct": -1.7436,
+    "projectStartIdx": 15,
+    "history": [
+      {
+        "date": "2026-06-18",
+        "label": "Jun 18",
+        "close": 128.47,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-22",
+        "label": "Jun 22",
+        "close": 119.5,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-23",
+        "label": "Jun 23",
+        "close": 116.7,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-24",
+        "label": "Jun 24",
+        "close": 113.5,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-25",
+        "label": "Jun 25",
+        "close": 107.27,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-26",
+        "label": "Jun 26",
+        "close": 112.93,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-29",
+        "label": "Jun 29",
+        "close": 115.7,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-30",
+        "label": "Jun 30",
+        "close": 116.67,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-01",
+        "label": "Jul 01",
+        "close": 125.73,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-02",
+        "label": "Jul 02",
+        "close": 129.3,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-06",
+        "label": "Jul 06",
+        "close": 132.54,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-07",
+        "label": "Jul 07",
+        "close": 134.37,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-08",
+        "label": "Jul 08",
+        "close": 132.22,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-09",
+        "label": "Jul 09",
+        "close": 129.04,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-10",
+        "label": "Jul 10",
+        "close": 126.79,
+        "preProject": true
+      }
+    ],
+    "fetchedAt": "2026-07-12T23:54:26.323192+00:00"
+  },
+  "CCJ": {
+    "price": 95.99,
+    "prev": 95.74,
+    "chgPct": 0.2611,
+    "projectStartIdx": 15,
+    "history": [
+      {
+        "date": "2026-06-18",
+        "label": "Jun 18",
+        "close": 106.49,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-22",
+        "label": "Jun 22",
+        "close": 107.07,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-23",
+        "label": "Jun 23",
+        "close": 108.89,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-24",
+        "label": "Jun 24",
+        "close": 106.64,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-25",
+        "label": "Jun 25",
+        "close": 103.58,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-26",
+        "label": "Jun 26",
+        "close": 104.49,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-29",
+        "label": "Jun 29",
+        "close": 103.47,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-30",
+        "label": "Jun 30",
+        "close": 101.86,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-01",
+        "label": "Jul 01",
+        "close": 97.39,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-02",
+        "label": "Jul 02",
+        "close": 96.54,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-06",
+        "label": "Jul 06",
+        "close": 97.5,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-07",
+        "label": "Jul 07",
+        "close": 94.67,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-08",
+        "label": "Jul 08",
+        "close": 94.73,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-09",
+        "label": "Jul 09",
+        "close": 95.74,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-10",
+        "label": "Jul 10",
+        "close": 95.99,
+        "preProject": true
+      }
+    ],
+    "fetchedAt": "2026-07-12T23:54:27.256508+00:00"
+  },
+  "QS": {
+    "price": 6.58,
+    "prev": 6.91,
+    "chgPct": -4.7757,
+    "projectStartIdx": 15,
+    "history": [
+      {
+        "date": "2026-06-18",
+        "label": "Jun 18",
+        "close": 8.04,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-22",
+        "label": "Jun 22",
+        "close": 7.61,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-23",
+        "label": "Jun 23",
+        "close": 7.42,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-24",
+        "label": "Jun 24",
+        "close": 7.12,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-25",
+        "label": "Jun 25",
+        "close": 7.13,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-26",
+        "label": "Jun 26",
+        "close": 7.16,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-29",
+        "label": "Jun 29",
+        "close": 7.59,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-30",
+        "label": "Jun 30",
+        "close": 7.56,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-01",
+        "label": "Jul 01",
+        "close": 7.61,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-02",
+        "label": "Jul 02",
+        "close": 7.07,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-06",
+        "label": "Jul 06",
+        "close": 7.24,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-07",
+        "label": "Jul 07",
+        "close": 6.79,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-08",
+        "label": "Jul 08",
+        "close": 6.63,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-09",
+        "label": "Jul 09",
+        "close": 6.91,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-10",
+        "label": "Jul 10",
+        "close": 6.58,
+        "preProject": true
+      }
+    ],
+    "fetchedAt": "2026-07-12T23:54:28.134270+00:00"
+  },
+  "NNXPF": {
+    "price": 1.054,
+    "prev": 1.065,
+    "chgPct": -1.0329,
+    "projectStartIdx": 15,
+    "history": [
+      {
+        "date": "2026-06-18",
+        "label": "Jun 18",
+        "close": 1.18,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-22",
+        "label": "Jun 22",
+        "close": 1.17,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-23",
+        "label": "Jun 23",
+        "close": 1.124,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-24",
+        "label": "Jun 24",
+        "close": 1.11,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-25",
+        "label": "Jun 25",
+        "close": 1.15,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-26",
+        "label": "Jun 26",
+        "close": 1.17,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-29",
+        "label": "Jun 29",
+        "close": 1.139,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-30",
+        "label": "Jun 30",
+        "close": 1.231,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-01",
+        "label": "Jul 01",
+        "close": 1.229,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-02",
+        "label": "Jul 02",
+        "close": 1.129,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-06",
+        "label": "Jul 06",
+        "close": 1.129,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-07",
+        "label": "Jul 07",
+        "close": 1.09,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-08",
+        "label": "Jul 08",
+        "close": 1.058,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-09",
+        "label": "Jul 09",
+        "close": 1.065,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-10",
+        "label": "Jul 10",
+        "close": 1.054,
+        "preProject": true
+      }
+    ],
+    "fetchedAt": "2026-07-12T23:54:28.985722+00:00"
+  },
+  "GMG": {
+    "price": 29.97,
+    "prev": 29.92,
+    "chgPct": 0.1671,
+    "projectStartIdx": 15,
+    "history": [
+      {
+        "date": "2026-06-22",
+        "label": "Jun 22",
+        "close": 31.55,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-23",
+        "label": "Jun 23",
+        "close": 31.55,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-24",
+        "label": "Jun 24",
+        "close": 31.83,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-25",
+        "label": "Jun 25",
+        "close": 32.19,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-26",
+        "label": "Jun 26",
+        "close": 32.01,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-29",
+        "label": "Jun 29",
+        "close": 32.1,
+        "preProject": true
+      },
+      {
+        "date": "2026-06-30",
+        "label": "Jun 30",
+        "close": 31.13,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-01",
+        "label": "Jul 01",
+        "close": 31.0,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-02",
+        "label": "Jul 02",
+        "close": 30.9,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-03",
+        "label": "Jul 03",
+        "close": 30.78,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-06",
+        "label": "Jul 06",
+        "close": 30.89,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-07",
+        "label": "Jul 07",
+        "close": 30.68,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-08",
+        "label": "Jul 08",
+        "close": 30.19,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-09",
+        "label": "Jul 09",
+        "close": 29.92,
+        "preProject": true
+      },
+      {
+        "date": "2026-07-10",
+        "label": "Jul 10",
+        "close": 29.97,
+        "preProject": true
+      }
+    ],
+    "fetchedAt": "2026-07-12T23:54:29.903560+00:00"
+  }
+}
