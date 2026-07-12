@@ -167,7 +167,7 @@
     padding-top: 10px; border-top: 1px solid var(--border);
   }
 
-  .mini-chart-wrap { height: 50px; margin-bottom: 8px; }
+  .mini-chart-wrap { height: 80px; margin-bottom: 8px; position: relative; }
 
   /* LOADING SPINNER */
   .loading {
@@ -344,25 +344,48 @@ function updateMarketStatus() {
 }
 
 // ─── FETCH PRICES via YH Finance proxy ───────────────────────────────────────
+// PROJECT_START: the date this portfolio was created (July 12 2026)
+const PROJECT_START = new Date('2026-07-12T00:00:00');
+
 async function fetchPrice(ticker) {
   try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=5d`;
+    // 60 calendar days to guarantee 15+ pre-project trading days
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=60d`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
-    const meta = json.chart.result[0].meta;
-    const closes = json.chart.result[0].indicators.quote[0].close;
-    const prev = closes[closes.length - 2] || meta.previousClose;
-    const curr = meta.regularMarketPrice || closes[closes.length - 1];
+    const result = json.chart.result[0];
+    const meta = result.meta;
+    const timestamps = result.timestamp || [];
+    const closes = result.indicators.quote[0].close || [];
+
+    // Build per-day objects with date labels
+    let days = timestamps.map((ts, i) => {
+      const d = new Date(ts * 1000);
+      const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const isPreProject = d < PROJECT_START;
+      return { date: d, label, close: closes[i], preProject: isPreProject };
+    }).filter(d => d.close != null);
+
+    // Keep last 15 pre-project trading days + all days from project start onward
+    const preProject = days.filter(d => d.preProject).slice(-15);
+    const postProject = days.filter(d => !d.preProject);
+    const history = [...preProject, ...postProject];
+
+    const n = history.length;
+    const curr = meta.regularMarketPrice || history[n-1]?.close;
+    const prev = history[n-2]?.close || meta.previousClose;
     const chgPct = prev ? ((curr - prev) / prev) * 100 : 0;
+
     return {
       price: curr,
       prev,
       chgPct,
-      closes: closes.slice(-5).map(v => v || 0)
+      history,                         // full labeled array
+      projectStartIdx: preProject.length  // index where project begins
     };
   } catch(e) {
-    return { price: null, prev: null, chgPct: null, closes: [] };
+    return { price: null, prev: null, chgPct: null, history: [], projectStartIdx: 0 };
   }
 }
 
@@ -460,8 +483,8 @@ function renderCards() {
         <span class="error-note">${stock.cat}</span>
       </div>
       <div class="alloc-bar"><div class="alloc-bar-fill" style="width:${Math.min(stock.alloc * 5, 100)}%"></div></div>
-      <div class="mini-chart-wrap">
-        <canvas class="sparkline" id="spark-${stock.ticker}"></canvas>
+      <div class="mini-chart-wrap" style="height:80px;">
+        <canvas class="sparkline" id="spark-${stock.ticker}" style="height:80px;"></canvas>
       </div>
       <div class="reason">${stock.reason}</div>
     `;
@@ -472,27 +495,126 @@ function renderCards() {
     setTimeout(() => {
       const canvas = document.getElementById(`spark-${stock.ticker}`);
       if (!canvas) return;
-      const closes = (pd.closes && pd.closes.length > 1) ? pd.closes : [0, 0, 0, 0, price || 0];
-      const isUp = closes[closes.length - 1] >= closes[0];
+
+      const history = pd.history && pd.history.length > 1 ? pd.history : [];
+      const projectStartIdx = pd.projectStartIdx || 0;
+      const closes = history.map(d => d.close);
+      const labels  = history.map(d => d.label);
+
+      const postCloses = closes.slice(projectStartIdx);
+      const refClose = postCloses.length ? postCloses[0] : (closes[closes.length - 1] || 0);
+      const lastClose = closes[closes.length - 1] || 0;
+      const isUp = lastClose >= refClose;
+
       const ctx = canvas.getContext('2d');
-      const color = isUp ? '#10b981' : '#ef4444';
-      const grad = ctx.createLinearGradient(0, 0, 0, 50);
-      grad.addColorStop(0, isUp ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)');
+
+      // Gradient for post-project line fill
+      const grad = ctx.createLinearGradient(0, 0, 0, 80);
+      grad.addColorStop(0, isUp ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)');
       grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+      // Pre-project segment (muted)
+      const preData  = closes.map((v, i) => i < projectStartIdx ? v : null);
+      // Post-project segment (colored)
+      const postData = closes.map((v, i) => i >= projectStartIdx ? v : null);
 
       if (SPARKLINE_INSTANCES[stock.ticker]) {
         SPARKLINE_INSTANCES[stock.ticker].destroy();
       }
+
+      // Plugin: draw shaded pre-project region + vertical divider
+      const preProjectPlugin = {
+        id: 'preProjectRegion',
+        beforeDraw(chart) {
+          if (projectStartIdx <= 0) return;
+          const { ctx: c, chartArea, scales } = chart;
+          // Calculate x position of the divider
+          const xScale = scales.x;
+          const divX = xScale.getPixelForValue(projectStartIdx - 0.5);
+          // Shade pre-project region
+          c.save();
+          c.fillStyle = 'rgba(100,116,139,0.08)';
+          c.fillRect(chartArea.left, chartArea.top, divX - chartArea.left, chartArea.bottom - chartArea.top);
+          // Dashed vertical line
+          c.strokeStyle = 'rgba(0,212,255,0.5)';
+          c.lineWidth = 1;
+          c.setLineDash([3, 3]);
+          c.beginPath();
+          c.moveTo(divX, chartArea.top);
+          c.lineTo(divX, chartArea.bottom);
+          c.stroke();
+          c.setLineDash([]);
+          // Label "Pre-Project" in the shaded zone
+          if (divX - chartArea.left > 30) {
+            c.fillStyle = 'rgba(100,116,139,0.7)';
+            c.font = '8px Space Mono, monospace';
+            c.textAlign = 'center';
+            c.fillText('PRE-PROJECT', chartArea.left + (divX - chartArea.left) / 2, chartArea.top + 10);
+          }
+          c.restore();
+        }
+      };
+
       SPARKLINE_INSTANCES[stock.ticker] = new Chart(ctx, {
         type: 'line',
+        plugins: [preProjectPlugin],
         data: {
-          labels: closes.map((_, i) => i),
-          datasets: [{ data: closes, borderColor: color, borderWidth: 1.5,
-            backgroundColor: grad, fill: true, tension: 0.4, pointRadius: 0 }]
+          labels,
+          datasets: [
+            {
+              // Pre-project: muted gray
+              data: preData,
+              borderColor: 'rgba(100,116,139,0.5)',
+              borderWidth: 1,
+              backgroundColor: 'transparent',
+              fill: false,
+              tension: 0.3,
+              pointRadius: 0,
+              spanGaps: false,
+            },
+            {
+              // Post-project: colored with fill
+              data: postData,
+              borderColor: isUp ? '#10b981' : '#ef4444',
+              borderWidth: 1.5,
+              backgroundColor: grad,
+              fill: true,
+              tension: 0.3,
+              pointRadius: 0,
+              spanGaps: false,
+            }
+          ]
         },
         options: {
-          responsive: true, maintainAspectRatio: false, animation: false,
-          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              enabled: true,
+              mode: 'index',
+              intersect: false,
+              backgroundColor: '#161d2e',
+              borderColor: '#1e2d45',
+              borderWidth: 1,
+              titleColor: '#64748b',
+              bodyColor: '#e2e8f0',
+              titleFont: { size: 9, family: 'Space Mono' },
+              bodyFont: { size: 10, family: 'Space Mono' },
+              callbacks: {
+                title: items => {
+                  const idx = items[0].dataIndex;
+                  const tag = idx < projectStartIdx ? '⬡ Pre-Project' : '★ Live';
+                  return `${labels[idx]}  ${tag}`;
+                },
+                label: items => {
+                  const v = items.raw;
+                  return v != null ? ` $${v.toFixed(2)}` : null;
+                }
+              }
+            }
+          },
           scales: { x: { display: false }, y: { display: false } }
         }
       });
