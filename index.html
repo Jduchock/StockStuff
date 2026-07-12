@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StockStuff — Portfolio Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --bg:        #0a0e1a;
+    --surface:   #111827;
+    --card:      #161d2e;
+    --border:    #1e2d45;
+    --accent:    #00d4ff;
+    --accent2:   #7c3aed;
+    --green:     #10b981;
+    --red:       #ef4444;
+    --gold:      #f59e0b;
+    --text:      #e2e8f0;
+    --muted:     #64748b;
+    --font-head: 'Space Grotesk', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-head); min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #0a0e1a 0%, #0d1b33 50%, #0a0e1a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: #fff;
+  }
+  .logo-text { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+  .logo-text span { color: var(--accent); }
+  .header-right { display: flex; align-items: center; gap: 20px; }
+  .market-status {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: 11px; color: var(--muted);
+  }
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+  .status-dot.closed { background: var(--red); animation: none; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+    50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(16,185,129,0); }
+  }
+  #next-refresh {
+    font-family: var(--font-mono); font-size: 11px; color: var(--muted);
+  }
+  #refresh-btn {
+    background: transparent; border: 1px solid var(--border); color: var(--accent);
+    padding: 6px 14px; border-radius: 6px; font-family: var(--font-head); font-size: 12px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  #refresh-btn:hover { background: rgba(0,212,255,0.1); border-color: var(--accent); }
+
+  /* MAIN */
+  main { padding: 28px 32px; max-width: 1600px; margin: 0 auto; }
+
+  /* SUMMARY STRIP */
+  .summary-strip {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 28px;
+  }
+  .sum-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .sum-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
+  .sum-value { font-size: 22px; font-weight: 700; font-family: var(--font-mono); }
+  .sum-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .up { color: var(--green); }
+  .dn { color: var(--red); }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted);
+    margin: 28px 0 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ALLOCATION CHART ROW */
+  .chart-row { display: grid; grid-template-columns: 340px 1fr; gap: 18px; margin-bottom: 28px; }
+  .chart-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px;
+  }
+  .chart-card h3 { font-size: 13px; font-weight: 600; margin-bottom: 16px; }
+  .donut-wrap { position: relative; height: 220px; }
+  .category-legend { margin-top: 14px; }
+  .cat-item {
+    display: flex; align-items: center; gap: 8px; padding: 5px 0;
+    font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .cat-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .cat-name { flex: 1; color: var(--muted); }
+  .cat-pct { font-family: var(--font-mono); font-size: 11px; }
+
+  /* STOCK GRID */
+  .stock-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 14px;
+  }
+  .stock-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 18px; transition: border-color 0.2s, transform 0.15s;
+    position: relative; overflow: hidden;
+  }
+  .stock-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .stock-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+  .stock-card.tier-core::before { background: var(--green); }
+  .stock-card.tier-growth::before { background: var(--accent); }
+  .stock-card.tier-longshot::before { background: var(--gold); }
+
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .ticker-block {}
+  .ticker { font-family: var(--font-mono); font-size: 18px; font-weight: 700; }
+  .company-name { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .tier-badge {
+    font-size: 9px; text-transform: uppercase; letter-spacing: 1px;
+    padding: 3px 8px; border-radius: 20px; font-weight: 600;
+  }
+  .tier-badge.core { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+  .tier-badge.growth { background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.2); }
+  .tier-badge.longshot { background: rgba(245,158,11,0.1); color: var(--gold); border: 1px solid rgba(245,158,11,0.25); }
+
+  .price-row {
+    display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px;
+  }
+  .price { font-family: var(--font-mono); font-size: 20px; font-weight: 700; }
+  .change-pct {
+    font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+    padding: 2px 7px; border-radius: 5px;
+  }
+  .change-pct.up { background: rgba(16,185,129,0.15); color: var(--green); }
+  .change-pct.dn { background: rgba(239,68,68,0.15); color: var(--red); }
+
+  .alloc-row {
+    display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 10px;
+  }
+  .alloc-val { font-family: var(--font-mono); color: var(--text); }
+
+  .alloc-bar { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 12px; }
+  .alloc-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+  .stock-card.tier-core .alloc-bar-fill { background: linear-gradient(90deg, var(--green), #059669); }
+  .stock-card.tier-longshot .alloc-bar-fill { background: linear-gradient(90deg, var(--gold), #d97706); }
+
+  .reason {
+    font-size: 11px; color: var(--muted); line-height: 1.5;
+    padding-top: 10px; border-top: 1px solid var(--border);
+  }
+
+  .mini-chart-wrap { height: 50px; margin-bottom: 8px; }
+
+  /* LOADING SPINNER */
+  .loading {
+    display: inline-block; width: 10px; height: 10px;
+    border: 2px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+    margin-left: 6px; vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* LAST UPDATE FOOTER */
+  footer {
+    text-align: center; padding: 24px; font-size: 11px; color: var(--muted);
+    border-top: 1px solid var(--border); margin-top: 40px;
+    font-family: var(--font-mono);
+  }
+
+  /* CATEGORY FILTER TABS */
+  .filter-tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+  .tab-btn {
+    padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); font-family: var(--font-head); font-size: 12px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .tab-btn.active, .tab-btn:hover { background: rgba(0,212,255,0.1); border-color: var(--accent); color: var(--accent); }
+  .tab-btn.core.active { background: rgba(16,185,129,0.1); border-color: var(--green); color: var(--green); }
+  .tab-btn.longshot.active { background: rgba(245,158,11,0.1); border-color: var(--gold); color: var(--gold); }
+
+  /* SPARKLINE canvas */
+  .sparkline { width: 100%; height: 50px; }
+
+  .error-note { font-size: 10px; color: var(--muted); font-family: var(--font-mono); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">SS</div>
+    <div class="logo-text">Stock<span>Stuff</span></div>
+  </div>
+  <div class="header-right">
+    <div class="market-status">
+      <div class="status-dot" id="market-dot"></div>
+      <span id="market-label">Checking...</span>
+    </div>
+    <div id="next-refresh">Next update: —</div>
+    <button id="refresh-btn" onclick="fetchAll()">↻ Refresh Now</button>
+  </div>
+</header>
+
+<main>
+  <!-- SUMMARY STRIP -->
+  <div class="summary-strip">
+    <div class="sum-card">
+      <div class="sum-label">Portfolio Value</div>
+      <div class="sum-value" id="port-value">$25,000</div>
+      <div class="sum-sub">Starting capital</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Current Value</div>
+      <div class="sum-value" id="port-current">—</div>
+      <div class="sum-sub" id="port-change-label">Loading...</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Positions</div>
+      <div class="sum-value">25</div>
+      <div class="sum-sub">Max capacity reached</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Best Performer</div>
+      <div class="sum-value up" id="best-ticker">—</div>
+      <div class="sum-sub up" id="best-chg">Loading...</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Worst Performer</div>
+      <div class="sum-value dn" id="worst-ticker">—</div>
+      <div class="sum-sub dn" id="worst-chg">Loading...</div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW -->
+  <div class="section-title">Allocation Overview</div>
+  <div class="chart-row">
+    <div class="chart-card">
+      <h3>By Category</h3>
+      <div class="donut-wrap">
+        <canvas id="donut-chart"></canvas>
+      </div>
+      <div class="category-legend" id="cat-legend"></div>
+    </div>
+    <div class="chart-card">
+      <h3>Daily Performance by Position</h3>
+      <canvas id="bar-chart" style="height:260px"></canvas>
+    </div>
+  </div>
+
+  <!-- STOCK CARDS -->
+  <div class="section-title">Holdings</div>
+
+  <div class="filter-tabs">
+    <button class="tab-btn active" onclick="filterCards('all', this)">All (25)</button>
+    <button class="tab-btn core" onclick="filterCards('core', this)">🟢 Core (10)</button>
+    <button class="tab-btn" onclick="filterCards('growth', this)">🔵 Growth / AI (9)</button>
+    <button class="tab-btn longshot" onclick="filterCards('longshot', this)">🟡 Long Shots (6)</button>
+  </div>
+
+  <div class="stock-grid" id="stock-grid"></div>
+</main>
+
+<footer id="footer">Last updated: —</footer>
+
+<script>
+// ─── PORTFOLIO DEFINITION ───────────────────────────────────────────────────
+const PORTFOLIO = [
+  // CORE (10) — proven, stable, dividend-paying or blue-chip
+  { ticker:'MSFT',  name:'Microsoft',          alloc:6,  tier:'core',     cat:'Tech / AI',     reason:'Dominant cloud (Azure) + OpenAI partnership makes it the most diversified AI play. Consistent 20%+ earnings growth and a dividend.' },
+  { ticker:'AAPL',  name:'Apple',              alloc:5,  tier:'core',     cat:'Consumer Tech', reason:'Trillion-dollar cash machine with deep ecosystem lock-in. Services segment growing 15%+ annually and AI-on-device is a new tailwind.' },
+  { ticker:'GOOGL', name:'Alphabet',           alloc:5,  tier:'core',     cat:'Tech / AI',     reason:'Controls search, cloud (GCP), and YouTube. Gemini AI is embedded across all products. Trades at a discount to peers on P/E.' },
+  { ticker:'AMZN',  name:'Amazon',             alloc:5,  tier:'core',     cat:'Tech / AI',     reason:'AWS is the world\'s largest cloud; AI workloads are disproportionately run there. Retail profitability is improving rapidly.' },
+  { ticker:'BRK.B', name:'Berkshire Hathaway', alloc:4,  tier:'core',     cat:'Diversified',   reason:'The ultimate defensive anchor. Buffett\'s fortress-balance-sheet conglomerate provides a shock absorber for the riskier slots.' },
+  { ticker:'JPM',   name:'JPMorgan Chase',     alloc:3,  tier:'core',     cat:'Finance',       reason:'Best-run bank on Earth. Benefits from higher-for-longer rates and is aggressively investing in AI for trading & compliance.' },
+  { ticker:'UNH',   name:'UnitedHealth',       alloc:3,  tier:'core',     cat:'Healthcare',    reason:'Healthcare inflation is unstoppable. UNH\'s Optum data platform is a moat. Defensive revenue with 10-yr CAGR near 14%.' },
+  { ticker:'XOM',   name:'ExxonMobil',         alloc:3,  tier:'core',     cat:'Energy',        reason:'Oil demand remains sticky. XOM\'s Pioneer acquisition makes it the largest US oil producer. 3.4% dividend yield.' },
+  { ticker:'LMT',   name:'Lockheed Martin',    alloc:2,  tier:'core',     cat:'Defense',       reason:'Global rearmament cycle is a decade-long tailwind. F-35, hypersonics, and space contracts provide backlog visibility past 2030.' },
+  { ticker:'NEE',   name:'NextEra Energy',     alloc:2,  tier:'core',     cat:'Clean Energy',  reason:'America\'s largest utility + largest wind/solar producer. AI data centers are driving unprecedented electricity demand.' },
+
+  // GROWTH / AI (9)
+  { ticker:'NVDA',  name:'Nvidia',             alloc:6,  tier:'growth',   cat:'Tech / AI',     reason:'The indispensable picks-and-shovels play for AI. H100/H200/Blackwell GPUs are the compute substrate for every major AI lab.' },
+  { ticker:'META',  name:'Meta Platforms',     alloc:3,  tier:'growth',   cat:'Tech / AI',     reason:'Llama open-source AI + Instagram Reels + WhatsApp monetization. 40B+ daily active users across its family of apps.' },
+  { ticker:'PLTR',  name:'Palantir',           alloc:3,  tier:'growth',   cat:'Tech / AI',     reason:'AIP (AI Platform) is winning government & enterprise deals at scale. The only profitable pure-play AI software company.' },
+  { ticker:'ORCL',  name:'Oracle',             alloc:3,  tier:'growth',   cat:'Tech / AI',     reason:'$300B OpenAI compute deal transforms Oracle into a hyperscale AI cloud. OCI is growing 50%+ year-over-year.' },
+  { ticker:'TSM',   name:'TSMC',               alloc:3,  tier:'growth',   cat:'Tech / AI',     reason:'Manufactures ~90% of the world\'s most advanced chips. Every AI hardware roadmap runs through TSMC fabs.' },
+  { ticker:'GEV',   name:'GE Vernova',         alloc:2,  tier:'growth',   cat:'Clean Energy',  reason:'Gas turbines + nuclear tech powering AI data centers. Stock up 385% since IPO. EPS expected to grow 82% in FY2026.' },
+  { ticker:'CRWD',  name:'CrowdStrike',        alloc:2,  tier:'growth',   cat:'Cybersecurity', reason:'AI-native security platform with the best threat-intelligence moat. Enterprises can\'t cut cybersecurity budgets regardless of economy.' },
+  { ticker:'CCJ',   name:'Cameco',             alloc:2,  tier:'growth',   cat:'Nuclear',       reason:'Uranium demand set to outpace supply for years. AI data centers are driving the nuclear renaissance. 800% stock gain in 5 years.' },
+  { ticker:'SNOW',  name:'Snowflake',          alloc:1,  tier:'growth',   cat:'Tech / AI',     reason:'Cloud data platform becoming the AI data lakehouse of choice. Enterprises need somewhere to put their training data.' },
+
+  // LONG SHOTS (6) — AI, Battery, Graphene themes
+  { ticker:'QS',    name:'QuantumScape',       alloc:2,  tier:'longshot', cat:'Battery Tech',  reason:'Furthest-along solid-state battery pure-play. Eagle Line facility now operational. VW partnership + $131M milestone payments. 104% YTD gain.' },
+  { ticker:'SLDP',  name:'Solid Power',        alloc:1,  tier:'longshot', cat:'Battery Tech',  reason:'Solid electrolyte components backed by Ford, BMW, Samsung. $435M liquidity gives runway. Less risky than full-cell plays.' },
+  { ticker:'NNXPF', name:'NanoXplore',         alloc:1,  tier:'longshot', cat:'Graphene',      reason:'North America\'s largest graphene powder manufacturer. Martinrea partnership gives captive automotive customer. Pure-play with real revenue.' },
+  { ticker:'ZTEK',  name:'Zentek',             alloc:1,  tier:'longshot', cat:'Graphene',      reason:'ZenGUARD antimicrobial graphene coating expanding to HVAC. Albany Graphite Deposit is a rare high-purity asset. Early-stage patent play.' },
+  { ticker:'GMG',   name:'Graphene Mfg Group', alloc:1,  tier:'longshot', cat:'Graphene',      reason:'Only graphene company with both commercial THERMAL-XR revenue AND a graphene aluminium-ion battery in development. Dual revenue path.' },
+  { ticker:'RXRX',  name:'Recursion Pharma',   alloc:1,  tier:'longshot', cat:'AI / BioTech',  reason:'AI-driven drug discovery using biological "foundation models". Nvidia and Bayer as strategic investors. Wildcard with massive upside.' },
+];
+
+const TOTAL_CAPITAL = 25000;
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let priceData = {};
+let refreshTimer = null;
+let countdownInterval = null;
+let nextRefreshAt = null;
+
+// ─── MARKET HOURS CHECK ──────────────────────────────────────────────────────
+function isMarketOpen() {
+  const now = new Date();
+  const et = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+  const day = et.getDay();
+  const h = et.getHours(), m = et.getMinutes();
+  const mins = h * 60 + m;
+  return day >= 1 && day <= 5 && mins >= 570 && mins < 960; // 9:30–16:00 ET
+}
+
+function updateMarketStatus() {
+  const open = isMarketOpen();
+  const dot = document.getElementById('market-dot');
+  const label = document.getElementById('market-label');
+  dot.className = 'status-dot' + (open ? '' : ' closed');
+  label.textContent = open ? 'Market Open' : 'Market Closed';
+}
+
+// ─── FETCH PRICES via YH Finance proxy ───────────────────────────────────────
+async function fetchPrice(ticker) {
+  try {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=5d`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    const meta = json.chart.result[0].meta;
+    const closes = json.chart.result[0].indicators.quote[0].close;
+    const prev = closes[closes.length - 2] || meta.previousClose;
+    const curr = meta.regularMarketPrice || closes[closes.length - 1];
+    const chgPct = prev ? ((curr - prev) / prev) * 100 : 0;
+    return {
+      price: curr,
+      prev,
+      chgPct,
+      closes: closes.slice(-5).map(v => v || 0)
+    };
+  } catch(e) {
+    return { price: null, prev: null, chgPct: null, closes: [] };
+  }
+}
+
+async function fetchAll() {
+  document.getElementById('refresh-btn').textContent = '↻ Updating...';
+  document.getElementById('refresh-btn').disabled = true;
+
+  // Fetch all in parallel
+  const results = await Promise.all(PORTFOLIO.map(s => fetchPrice(s.ticker)));
+  results.forEach((r, i) => { priceData[PORTFOLIO[i].ticker] = r; });
+
+  renderCards();
+  renderSummary();
+  renderBarChart();
+  updateMarketStatus();
+  scheduleNext();
+
+  const now = new Date();
+  document.getElementById('footer').textContent =
+    `Last updated: ${now.toLocaleString()} — Data via Yahoo Finance`;
+  document.getElementById('refresh-btn').textContent = '↻ Refresh Now';
+  document.getElementById('refresh-btn').disabled = false;
+}
+
+// ─── SCHEDULE NEXT REFRESH (every 30 min during market hours) ────────────────
+function scheduleNext() {
+  if (refreshTimer) clearTimeout(refreshTimer);
+  if (countdownInterval) clearInterval(countdownInterval);
+
+  const INTERVAL = 30 * 60 * 1000; // 30 min
+  nextRefreshAt = Date.now() + INTERVAL;
+
+  refreshTimer = setTimeout(() => {
+    if (isMarketOpen()) fetchAll();
+    else scheduleNext();
+  }, INTERVAL);
+
+  countdownInterval = setInterval(() => {
+    const rem = Math.max(0, Math.floor((nextRefreshAt - Date.now()) / 1000));
+    const mm = String(Math.floor(rem / 60)).padStart(2, '0');
+    const ss = String(rem % 60).padStart(2, '0');
+    document.getElementById('next-refresh').textContent = `Next: ${mm}:${ss}`;
+  }, 1000);
+}
+
+// ─── RENDER STOCK CARDS ────────────────────────────────────────────────────
+let currentFilter = 'all';
+
+function filterCards(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.stock-card').forEach(c => {
+    c.style.display = (filter === 'all' || c.dataset.tier === filter) ? '' : 'none';
+  });
+}
+
+const SPARKLINE_INSTANCES = {};
+
+function renderCards() {
+  const grid = document.getElementById('stock-grid');
+  grid.innerHTML = '';
+
+  PORTFOLIO.forEach(stock => {
+    const pd = priceData[stock.ticker] || {};
+    const price = pd.price;
+    const chg = pd.chgPct;
+    const dollars = TOTAL_CAPITAL * (stock.alloc / 100);
+
+    const priceStr = price != null ? `$${price.toFixed(2)}` : '—';
+    const chgStr = chg != null ? `${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%` : '—';
+    const chgClass = chg == null ? '' : chg >= 0 ? 'up' : 'dn';
+    const tierLabel = stock.tier === 'core' ? 'Core' : stock.tier === 'growth' ? 'Growth' : 'Long Shot';
+
+    const card = document.createElement('div');
+    card.className = `stock-card tier-${stock.tier}`;
+    card.dataset.tier = stock.tier;
+    if (currentFilter !== 'all' && stock.tier !== currentFilter) card.style.display = 'none';
+
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="ticker-block">
+          <div class="ticker">${stock.ticker}</div>
+          <div class="company-name">${stock.name}</div>
+        </div>
+        <span class="tier-badge ${stock.tier === 'core' ? 'core' : stock.tier === 'longshot' ? 'longshot' : 'growth'}">${tierLabel}</span>
+      </div>
+      <div class="price-row">
+        <span class="price">${priceStr}</span>
+        <span class="change-pct ${chgClass}">${chgStr}</span>
+      </div>
+      <div class="alloc-row">
+        <span>Allocation: <span class="alloc-val">${stock.alloc}%</span></span>
+        <span>Invested: <span class="alloc-val">$${dollars.toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0})}</span></span>
+        <span class="error-note">${stock.cat}</span>
+      </div>
+      <div class="alloc-bar"><div class="alloc-bar-fill" style="width:${Math.min(stock.alloc * 5, 100)}%"></div></div>
+      <div class="mini-chart-wrap">
+        <canvas class="sparkline" id="spark-${stock.ticker}"></canvas>
+      </div>
+      <div class="reason">${stock.reason}</div>
+    `;
+
+    grid.appendChild(card);
+
+    // Draw sparkline after DOM insert
+    setTimeout(() => {
+      const canvas = document.getElementById(`spark-${stock.ticker}`);
+      if (!canvas) return;
+      const closes = (pd.closes && pd.closes.length > 1) ? pd.closes : [0, 0, 0, 0, price || 0];
+      const isUp = closes[closes.length - 1] >= closes[0];
+      const ctx = canvas.getContext('2d');
+      const color = isUp ? '#10b981' : '#ef4444';
+      const grad = ctx.createLinearGradient(0, 0, 0, 50);
+      grad.addColorStop(0, isUp ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)');
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+      if (SPARKLINE_INSTANCES[stock.ticker]) {
+        SPARKLINE_INSTANCES[stock.ticker].destroy();
+      }
+      SPARKLINE_INSTANCES[stock.ticker] = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: closes.map((_, i) => i),
+          datasets: [{ data: closes, borderColor: color, borderWidth: 1.5,
+            backgroundColor: grad, fill: true, tension: 0.4, pointRadius: 0 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, animation: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          scales: { x: { display: false }, y: { display: false } }
+        }
+      });
+    }, 50);
+  });
+}
+
+// ─── SUMMARY STRIP ─────────────────────────────────────────────────────────
+function renderSummary() {
+  let totalCurrent = 0;
+  let best = null, worst = null;
+
+  PORTFOLIO.forEach(s => {
+    const pd = priceData[s.ticker] || {};
+    if (pd.price && pd.prev) {
+      const dollars = TOTAL_CAPITAL * (s.alloc / 100);
+      const ratio = pd.price / pd.prev;
+      totalCurrent += dollars * ratio;
+    } else {
+      totalCurrent += TOTAL_CAPITAL * (s.alloc / 100);
+    }
+    const chg = pd.chgPct;
+    if (chg != null) {
+      if (!best || chg > best.chg) best = { ticker: s.ticker, chg };
+      if (!worst || chg < worst.chg) worst = { ticker: s.ticker, chg };
+    }
+  });
+
+  const diff = totalCurrent - TOTAL_CAPITAL;
+  const diffPct = (diff / TOTAL_CAPITAL) * 100;
+  document.getElementById('port-current').textContent = `$${totalCurrent.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0})}`;
+  document.getElementById('port-current').className = `sum-value ${diff >= 0 ? 'up' : 'dn'}`;
+  document.getElementById('port-change-label').textContent = `${diff >= 0 ? '+' : ''}$${diff.toFixed(0)} (${diffPct.toFixed(2)}%) today`;
+  document.getElementById('port-change-label').className = `sum-sub ${diff >= 0 ? 'up' : 'dn'}`;
+
+  if (best) {
+    document.getElementById('best-ticker').textContent = best.ticker;
+    document.getElementById('best-chg').textContent = `+${best.chg.toFixed(2)}% today`;
+  }
+  if (worst) {
+    document.getElementById('worst-ticker').textContent = worst.ticker;
+    document.getElementById('worst-chg').textContent = `${worst.chg.toFixed(2)}% today`;
+  }
+}
+
+// ─── DONUT CHART ───────────────────────────────────────────────────────────
+const CATS = [
+  { name: 'Tech / AI',      color: '#00d4ff' },
+  { name: 'Consumer Tech',  color: '#7c3aed' },
+  { name: 'Clean Energy',   color: '#10b981' },
+  { name: 'Finance',        color: '#3b82f6' },
+  { name: 'Healthcare',     color: '#ec4899' },
+  { name: 'Defense',        color: '#64748b' },
+  { name: 'Energy',         color: '#f59e0b' },
+  { name: 'Nuclear',        color: '#8b5cf6' },
+  { name: 'Cybersecurity',  color: '#06b6d4' },
+  { name: 'Diversified',    color: '#94a3b8' },
+  { name: 'Battery Tech',   color: '#fbbf24' },
+  { name: 'Graphene',       color: '#34d399' },
+  { name: 'AI / BioTech',   color: '#f472b6' },
+];
+
+function initDonut() {
+  const catTotals = {};
+  PORTFOLIO.forEach(s => {
+    catTotals[s.cat] = (catTotals[s.cat] || 0) + s.alloc;
+  });
+
+  const labels = Object.keys(catTotals);
+  const data = labels.map(l => catTotals[l]);
+  const colors = labels.map(l => (CATS.find(c => c.name === l) || { color: '#888' }).color);
+
+  new Chart(document.getElementById('donut-chart').getContext('2d'), {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 0, hoverOffset: 6 }] },
+    options: {
+      cutout: '68%', responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.label}: ${ctx.parsed}%  ($${(TOTAL_CAPITAL * ctx.parsed / 100).toFixed(0)})`
+          }
+        }
+      }
+    }
+  });
+
+  // Legend
+  const leg = document.getElementById('cat-legend');
+  leg.innerHTML = '';
+  labels.forEach((l, i) => {
+    leg.innerHTML += `<div class="cat-item">
+      <div class="cat-dot" style="background:${colors[i]}"></div>
+      <span class="cat-name">${l}</span>
+      <span class="cat-pct">${data[i]}%</span>
+    </div>`;
+  });
+}
+
+// ─── BAR CHART ─────────────────────────────────────────────────────────────
+let barInstance = null;
+function renderBarChart() {
+  const tickers = PORTFOLIO.map(s => s.ticker);
+  const changes = PORTFOLIO.map(s => {
+    const pd = priceData[s.ticker] || {};
+    return pd.chgPct != null ? pd.chgPct : 0;
+  });
+  const colors = changes.map(c => c >= 0 ? 'rgba(16,185,129,0.7)' : 'rgba(239,68,68,0.7)');
+
+  if (barInstance) barInstance.destroy();
+  barInstance = new Chart(document.getElementById('bar-chart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: tickers,
+      datasets: [{
+        data: changes, backgroundColor: colors, borderRadius: 4,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: { label: ctx => ` ${ctx.parsed.y >= 0 ? '+' : ''}${ctx.parsed.y.toFixed(2)}%` }
+      }},
+      scales: {
+        x: { ticks: { color: '#64748b', font: { size: 9, family: 'Space Mono' }, maxRotation: 45 }, grid: { color: '#1e2d45' } },
+        y: { ticks: { color: '#64748b', font: { size: 10 }, callback: v => v.toFixed(1) + '%' }, grid: { color: '#1e2d45' } }
+      }
+    }
+  });
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+initDonut();
+renderCards();
+renderBarChart();
+updateMarketStatus();
+fetchAll();
+</script>
+</body>
+</html>
