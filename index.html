@@ -261,7 +261,9 @@
     </div>
     <div class="chart-card">
       <h3>Daily Performance by Position</h3>
-      <canvas id="bar-chart" style="height:260px"></canvas>
+      <div style="position:relative; width:100%; height:260px;">
+        <canvas id="bar-chart"></canvas>
+      </div>
     </div>
   </div>
 
@@ -597,28 +599,74 @@ function renderBarChart() {
   const tickers = PORTFOLIO.map(s => s.ticker);
   const changes = PORTFOLIO.map(s => {
     const pd = priceData[s.ticker] || {};
-    return pd.chgPct != null ? pd.chgPct : 0;
+    return pd.chgPct != null ? parseFloat(pd.chgPct.toFixed(3)) : null;
   });
-  const colors = changes.map(c => c >= 0 ? 'rgba(16,185,129,0.7)' : 'rgba(239,68,68,0.7)');
 
-  if (barInstance) barInstance.destroy();
-  barInstance = new Chart(document.getElementById('bar-chart').getContext('2d'), {
+  // Color by tier, shade by direction
+  const colors = PORTFOLIO.map((s, i) => {
+    const v = changes[i];
+    if (v === null) return 'rgba(100,116,139,0.4)';
+    if (s.tier === 'core')     return v >= 0 ? 'rgba(16,185,129,0.8)'  : 'rgba(239,68,68,0.8)';
+    if (s.tier === 'growth')   return v >= 0 ? 'rgba(0,212,255,0.8)'   : 'rgba(239,68,68,0.8)';
+    return                            v >= 0 ? 'rgba(245,158,11,0.85)' : 'rgba(239,68,68,0.8)';
+  });
+
+  const allVals = changes.filter(v => v !== null);
+  const minVal = allVals.length ? Math.min(...allVals) : -1;
+  const maxVal = allVals.length ? Math.max(...allVals) : 1;
+  const pad = Math.max(0.5, (maxVal - minVal) * 0.15);
+
+  if (barInstance) { barInstance.destroy(); barInstance = null; }
+
+  const canvas = document.getElementById('bar-chart');
+  if (!canvas) return;
+  barInstance = new Chart(canvas.getContext('2d'), {
     type: 'bar',
     data: {
       labels: tickers,
       datasets: [{
-        data: changes, backgroundColor: colors, borderRadius: 4,
-        borderSkipped: false
+        data: changes,
+        backgroundColor: colors,
+        borderRadius: 3,
+        borderSkipped: false,
+        barPercentage: 0.75,
       }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: {
-        callbacks: { label: ctx => ` ${ctx.parsed.y >= 0 ? '+' : ''}${ctx.parsed.y.toFixed(2)}%` }
-      }},
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#161d2e',
+          borderColor: '#1e2d45',
+          borderWidth: 1,
+          callbacks: {
+            label: ctx => {
+              const v = ctx.parsed.y;
+              return v !== null ? ` ${v >= 0 ? '+' : ''}${v.toFixed(2)}%` : ' No data';
+            }
+          }
+        }
+      },
       scales: {
-        x: { ticks: { color: '#64748b', font: { size: 9, family: 'Space Mono' }, maxRotation: 45 }, grid: { color: '#1e2d45' } },
-        y: { ticks: { color: '#64748b', font: { size: 10 }, callback: v => v.toFixed(1) + '%' }, grid: { color: '#1e2d45' } }
+        x: {
+          ticks: { color: '#64748b', font: { size: 9, family: 'Space Mono' }, maxRotation: 45, minRotation: 45 },
+          grid: { color: '#1e2d45' }
+        },
+        y: {
+          min: minVal - pad,
+          max: maxVal + pad,
+          ticks: {
+            color: '#64748b',
+            font: { size: 10 },
+            callback: v => (v > 0 ? '+' : '') + v.toFixed(1) + '%'
+          },
+          grid: {
+            color: ctx => ctx.tick.value === 0 ? 'rgba(255,255,255,0.2)' : '#1e2d45',
+            lineWidth: ctx => ctx.tick.value === 0 ? 1.5 : 1,
+          }
+        }
       }
     }
   });
@@ -627,9 +675,8 @@ function renderBarChart() {
 // ─── INIT ────────────────────────────────────────────────────────────────────
 initDonut();
 renderCards();
-renderBarChart();
 updateMarketStatus();
-fetchAll();
+fetchAll(); // renderBarChart() is called inside fetchAll after prices arrive
 </script>
 </body>
 </html>
