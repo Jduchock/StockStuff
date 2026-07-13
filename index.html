@@ -821,9 +821,9 @@ function initDonut() {
 // ── TIER LINE CHARTS ──────────────────────────────────────────────────────────
 // Colors per ticker — distinct, readable on dark bg
 const TICKER_COLORS = {
-  NVDA:'#00d4ff', MSFT:'#10b981', GOOGL:'#f59e0b', MU:'#a78bfa',
-  AVGO:'#38bdf8', PLTR:'#fb923c', CCJ:'#34d399',
-  QS:'#fbbf24', NNXPF:'#f472b6', GMG:'#86efac'
+  NVDA:'#00eeff', MSFT:'#00ff99', GOOGL:'#ffb300', MU:'#c084fc',
+  AVGO:'#22d3ee', PLTR:'#ff7a35', CCJ:'#00e396',
+  QS:'#ffd000', NNXPF:'#ff5eab', GMG:'#4eff91'
 };
 
 const TIERS = {
@@ -864,8 +864,8 @@ function renderTierCharts() {
         {
           label: ticker,
           data: vals.map((v, i) => i < projectStartIdx ? v : null),
-          borderColor: TICKER_COLORS[ticker] + '55',
-          borderWidth: 1,
+          borderColor: TICKER_COLORS[ticker] + 'aa',
+          borderWidth: 1.5,
           borderDash: [4, 3],
           pointRadius: 0,
           fill: false,
@@ -876,7 +876,7 @@ function renderTierCharts() {
           label: ticker + '_live',
           data: vals.map((v, i) => i >= projectStartIdx ? v : null),
           borderColor: TICKER_COLORS[ticker],
-          borderWidth: 2,
+          borderWidth: 2.5,
           pointRadius: 0,
           pointHoverRadius: 4,
           fill: false,
