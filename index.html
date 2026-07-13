@@ -35,12 +35,22 @@
   main{padding:28px 32px;max-width:1600px;margin:0 auto;}
 
   /* SUMMARY STRIP */
-  .summary-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px;}
+  .summary-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:14px;}
   .sum-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
   .sum-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;}
   .sum-value{font-size:22px;font-weight:700;font-family:var(--font-mono);}
   .sum-sub{font-size:11px;color:var(--muted);margin-top:4px;}
   .up{color:var(--green);} .dn{color:var(--red);}
+
+  /* KPI STRIP */
+  .kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:28px;}
+  .kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden;}
+  .kpi-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent);opacity:0.25;}
+  .kpi-card.kpi-up::after{background:var(--green);opacity:0.6;}
+  .kpi-card.kpi-dn::after{background:var(--red);opacity:0.6;}
+  .kpi-label{font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);}
+  .kpi-value{font-size:18px;font-weight:700;font-family:var(--font-mono);line-height:1;}
+  .kpi-sub{font-size:10px;color:var(--muted);margin-top:2px;}
 
   .section-title{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin:28px 0 14px;display:flex;align-items:center;gap:10px;}
   .section-title::after{content:'';flex:1;height:1px;background:var(--border);}
@@ -149,9 +159,9 @@
       <div class="sum-sub" id="port-change-label">Loading…</div>
     </div>
     <div class="sum-card">
-      <div class="sum-label">Positions</div>
-      <div class="sum-value">10</div>
-      <div class="sum-sub">4 core · 3 growth · 3 long shots</div>
+      <div class="sum-label">Total Return</div>
+      <div class="sum-value" id="total-return-val">—</div>
+      <div class="sum-sub" id="total-return-sub">Since inception</div>
     </div>
     <div class="sum-card">
       <div class="sum-label">Best Today</div>
@@ -162,6 +172,40 @@
       <div class="sum-label">Worst Today</div>
       <div class="sum-value dn" id="worst-ticker">—</div>
       <div class="sum-sub dn" id="worst-chg">—</div>
+    </div>
+  </div>
+
+  <!-- KPI STRIP -->
+  <div class="kpi-strip">
+    <div class="kpi-card" id="kpi-day">
+      <div class="kpi-label">Day Change</div>
+      <div class="kpi-value" id="kpi-day-val">—</div>
+      <div class="kpi-sub" id="kpi-day-sub">vs prev close</div>
+    </div>
+    <div class="kpi-card" id="kpi-week">
+      <div class="kpi-label">Week Change</div>
+      <div class="kpi-value" id="kpi-week-val">—</div>
+      <div class="kpi-sub">5 trading days</div>
+    </div>
+    <div class="kpi-card" id="kpi-tracked">
+      <div class="kpi-label">Since Tracked</div>
+      <div class="kpi-value" id="kpi-tracked-val">—</div>
+      <div class="kpi-sub" id="kpi-tracked-sub">15 trading days</div>
+    </div>
+    <div class="kpi-card" id="kpi-winners">
+      <div class="kpi-label">Winners Today</div>
+      <div class="kpi-value" id="kpi-winners-val">—</div>
+      <div class="kpi-sub" id="kpi-winners-sub">of 10 positions</div>
+    </div>
+    <div class="kpi-card" id="kpi-high">
+      <div class="kpi-label">Portfolio High</div>
+      <div class="kpi-value" id="kpi-high-val">—</div>
+      <div class="kpi-sub" id="kpi-high-sub">since tracked</div>
+    </div>
+    <div class="kpi-card" id="kpi-vol">
+      <div class="kpi-label">Avg Daily Move</div>
+      <div class="kpi-value" id="kpi-vol-val">—</div>
+      <div class="kpi-sub">portfolio volatility</div>
     </div>
   </div>
 
@@ -334,33 +378,138 @@ function renderAll() {
   renderCards();
 }
 
-// ── SUMMARY STRIP ─────────────────────────────────────────────────────────────
+// ── SUMMARY STRIP + KPI STRIP ────────────────────────────────────────────────
 function renderSummary() {
-  let totalCurrent = 0;
-  let best = null, worst = null;
+  const el = id => document.getElementById(id);
+  let totalCurrent=0, totalPrev=0, total1wk=0, totalOldest=0;
+  let best=null, worst=null, winners=0;
+  let dailyPortMoves = [];  // for volatility calc
+
   PORTFOLIO.forEach(s => {
     const pd = priceData[s.ticker] || {};
+    const h = pd.history || [];
     const dollars = TOTAL_CAPITAL * (s.alloc/100);
-    if (pd.price && pd.prev) {
-      totalCurrent += dollars * (pd.price/pd.prev);
-    } else {
-      totalCurrent += dollars;
-    }
+    const oldest = h[0]?.close;
+    const wk5    = h.length>=5 ? h[h.length-5]?.close : null;
+    const prev   = h.length>=2 ? h[h.length-2]?.close : null;
+    const last   = pd.price || h[h.length-1]?.close;
+
+    // Use oldest history as baseline denominator
+    const base = oldest || last;
+    if (last && base)   totalCurrent += dollars * (last/base);
+    else                totalCurrent += dollars;
+    if (prev && base)   totalPrev    += dollars * (prev/base);
+    else                totalPrev    += dollars;
+    if (wk5  && base)   total1wk     += dollars * (wk5/base);
+    else                total1wk     += dollars;
+    totalOldest += dollars;  // baseline = starting capital at oldest date
+
     const chg = pd.chgPct;
     if (chg != null) {
-      if (!best || chg > best.chg) best = {ticker:s.ticker, chg};
+      if (!best  || chg > best.chg)  best  = {ticker:s.ticker, chg};
       if (!worst || chg < worst.chg) worst = {ticker:s.ticker, chg};
+      if (chg >= 0) winners++;
     }
   });
-  const diff = totalCurrent - TOTAL_CAPITAL;
-  const pct = (diff/TOTAL_CAPITAL)*100;
-  const el = v => document.getElementById(v);
+
+  // Portfolio high: max daily portfolio value across history
+  // Build portfolio value for each history index
+  const histLen = (priceData[PORTFOLIO[0].ticker]?.history||[]).length;
+  let portHigh = 0, portHighDate = '';
+  for (let i=1; i<histLen; i++) {
+    let val = 0;
+    PORTFOLIO.forEach(s => {
+      const h = priceData[s.ticker]?.history || [];
+      const base = h[0]?.close;
+      const dayClose = h[i]?.close;
+      const dollars = TOTAL_CAPITAL*(s.alloc/100);
+      if (dayClose && base) val += dollars*(dayClose/base);
+      else val += dollars;
+    });
+    if (val > portHigh) {
+      portHigh = val;
+      portHighDate = priceData[PORTFOLIO[0].ticker]?.history[i]?.label || '';
+    }
+    // Daily move for volatility
+    if (i>0) {
+      let prevVal = 0;
+      PORTFOLIO.forEach(s => {
+        const h = priceData[s.ticker]?.history || [];
+        const base = h[0]?.close;
+        const d = h[i-1]?.close;
+        const dollars = TOTAL_CAPITAL*(s.alloc/100);
+        if (d && base) prevVal += dollars*(d/base);
+        else prevVal += dollars;
+      });
+      if (prevVal>0) dailyPortMoves.push(Math.abs((val-prevVal)/prevVal*100));
+    }
+  }
+
+  // ── Row 1: main strip ────────────────────────────────────────────────────
+  const dayDiff = totalCurrent - totalPrev;
+  const dayPct  = totalPrev>0 ? (dayDiff/totalPrev)*100 : 0;
   el('port-current').textContent = '$'+totalCurrent.toLocaleString(undefined,{maximumFractionDigits:0});
-  el('port-current').className = 'sum-value '+(diff>=0?'up':'dn');
-  el('port-change-label').textContent = (diff>=0?'+':'')+'$'+diff.toFixed(0)+' ('+pct.toFixed(2)+'%) vs prev close';
-  el('port-change-label').className = 'sum-sub '+(diff>=0?'up':'dn');
-  if (best) { el('best-ticker').textContent=best.ticker; el('best-chg').textContent='+'+best.chg.toFixed(2)+'% today'; }
+  el('port-current').className = 'sum-value '+(dayDiff>=0?'up':'dn');
+  el('port-change-label').textContent = (dayDiff>=0?'+':'')+'$'+dayDiff.toFixed(0)+' ('+dayPct.toFixed(2)+'%) vs prev close';
+  el('port-change-label').className = 'sum-sub '+(dayDiff>=0?'up':'dn');
+
+  // Total return vs $25k
+  const totalDiff = totalCurrent - TOTAL_CAPITAL;
+  const totalPct  = (totalDiff/TOTAL_CAPITAL)*100;
+  el('total-return-val').textContent = (totalPct>=0?'+':'')+totalPct.toFixed(2)+'%';
+  el('total-return-val').className = 'sum-value '+(totalPct>=0?'up':'dn');
+  el('total-return-sub').textContent = (totalDiff>=0?'+':'')+'$'+Math.abs(totalDiff).toFixed(0)+' vs $25k';
+
+  if (best)  { el('best-ticker').textContent=best.ticker;  el('best-chg').textContent='+'+best.chg.toFixed(2)+'% today'; }
   if (worst) { el('worst-ticker').textContent=worst.ticker; el('worst-chg').textContent=worst.chg.toFixed(2)+'% today'; }
+
+  // ── Row 2: KPI strip ─────────────────────────────────────────────────────
+  function setKpi(cardId, valId, value, subText, isUp) {
+    const card = el(cardId);
+    card.className = 'kpi-card' + (isUp===true?' kpi-up':isUp===false?' kpi-dn':'');
+    el(valId).textContent = value;
+    el(valId).className   = 'kpi-value' + (isUp===true?' up':isUp===false?' dn':'');
+    if (subText && el(valId+'sub')) el(valId+'sub').textContent = subText;
+  }
+
+  // Day change %
+  const kpiDay = dayPct;
+  el('kpi-day-val').textContent = (kpiDay>=0?'+':'')+kpiDay.toFixed(2)+'%';
+  el('kpi-day-val').className   = 'kpi-value '+(kpiDay>=0?'up':'dn');
+  el('kpi-day').className = 'kpi-card '+(kpiDay>=0?'kpi-up':'kpi-dn');
+  el('kpi-day-sub').textContent = (dayDiff>=0?'+':'')+'$'+Math.abs(dayDiff).toFixed(0);
+
+  // Week change % (5 trading days)
+  const kpiWk = total1wk>0 ? (totalCurrent-total1wk)/total1wk*100 : 0;
+  el('kpi-week-val').textContent = (kpiWk>=0?'+':'')+kpiWk.toFixed(2)+'%';
+  el('kpi-week-val').className   = 'kpi-value '+(kpiWk>=0?'up':'dn');
+  el('kpi-week').className = 'kpi-card '+(kpiWk>=0?'kpi-up':'kpi-dn');
+
+  // Since tracked (vs oldest history day = project baseline)
+  const kpiTracked = totalOldest>0 ? (totalCurrent-totalOldest)/totalOldest*100 : 0;
+  el('kpi-tracked-val').textContent = (kpiTracked>=0?'+':'')+kpiTracked.toFixed(2)+'%';
+  el('kpi-tracked-val').className   = 'kpi-value '+(kpiTracked>=0?'up':'dn');
+  el('kpi-tracked').className = 'kpi-card '+(kpiTracked>=0?'kpi-up':'kpi-dn');
+  el('kpi-tracked-sub').textContent = 'since Jun 18 baseline';
+
+  // Winners today
+  const losers = PORTFOLIO.length - winners;
+  el('kpi-winners-val').textContent = winners+' / '+PORTFOLIO.length;
+  el('kpi-winners-val').className   = 'kpi-value '+(winners>losers?'up':winners<losers?'dn':'');
+  el('kpi-winners').className = 'kpi-card '+(winners>losers?'kpi-up':winners<losers?'kpi-dn':'');
+  el('kpi-winners-sub').textContent = losers+' loser'+(losers!==1?'s':'')+' today';
+
+  // Portfolio high
+  if (portHigh>0) {
+    el('kpi-high-val').textContent = '$'+portHigh.toLocaleString(undefined,{maximumFractionDigits:0});
+    el('kpi-high-val').className   = 'kpi-value';
+    el('kpi-high-sub').textContent = portHighDate ? 'on '+portHighDate : 'since tracked';
+  }
+
+  // Avg daily move (portfolio volatility proxy)
+  const avgMove = dailyPortMoves.length ? dailyPortMoves.reduce((a,b)=>a+b,0)/dailyPortMoves.length : 0;
+  el('kpi-vol-val').textContent = avgMove.toFixed(2)+'%';
+  el('kpi-vol-val').className   = 'kpi-value';
 }
 
 // ── BAR CHART ─────────────────────────────────────────────────────────────────
