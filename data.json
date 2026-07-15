@@ -1,8 +1,8 @@
 {
   "NVDA": {
-    "price": 203.528,
-    "prev": 210.96,
-    "chgPct": -3.5229,
+    "price": 211.8,
+    "prev": 203.53,
+    "chgPct": 4.0633,
     "projectStartIdx": 15,
     "history": [
       {
@@ -98,16 +98,22 @@
       {
         "date": "2026-07-13",
         "label": "Jul 13",
-        "close": 203.5284,
+        "close": 203.53,
+        "preProject": false
+      },
+      {
+        "date": "2026-07-14",
+        "label": "Jul 14",
+        "close": 211.8,
         "preProject": false
       }
     ],
-    "fetchedAt": "2026-07-13T20:04:33.023574+00:00"
+    "fetchedAt": "2026-07-15T01:20:48.129917+00:00"
   },
   "MSFT": {
-    "price": 390.99,
-    "prev": 385.1,
-    "chgPct": 1.5295,
+    "price": 384.93,
+    "prev": 390.99,
+    "chgPct": -1.5499,
     "projectStartIdx": 15,
     "history": [
       {
@@ -205,14 +211,20 @@
         "label": "Jul 13",
         "close": 390.99,
         "preProject": false
+      },
+      {
+        "date": "2026-07-14",
+        "label": "Jul 14",
+        "close": 384.93,
+        "preProject": false
       }
     ],
-    "fetchedAt": "2026-07-13T20:04:33.710581+00:00"
+    "fetchedAt": "2026-07-15T01:20:48.922143+00:00"
   },
   "GOOGL": {
-    "price": 352.51,
-    "prev": 357.18,
-    "chgPct": -1.3075,
+    "price": 359.51,
+    "prev": 352.51,
+    "chgPct": 1.9858,
     "projectStartIdx": 15,
     "history": [
       {
@@ -310,14 +322,20 @@
         "label": "Jul 13",
         "close": 352.51,
         "preProject": false
+      },
+      {
+        "date": "2026-07-14",
+        "label": "Jul 14",
+        "close": 359.51,
+        "preProject": false
       }
     ],
-    "fetchedAt": "2026-07-13T20:04:34.435803+00:00"
+    "fetchedAt": "2026-07-15T01:20:49.627590+00:00"
   },
   "MU": {
-    "price": 937.0,
-    "prev": 979.3,
-    "chgPct": -4.3194,
+    "price": 983.12,
+    "prev": 937.0,
+    "chgPct": 4.9221,
     "projectStartIdx": 15,
     "history": [
       {
@@ -415,14 +433,20 @@
         "label": "Jul 13",
         "close": 937.0,
         "preProject": false
+      },
+      {
+        "date": "2026-07-14",
+        "label": "Jul 14",
+        "close": 983.12,
+        "preProject": false
       }
     ],
-    "fetchedAt": "2026-07-13T20:04:35.426197+00:00"
+    "fetchedAt": "2026-07-15T01:20:50.373091+00:00"
   },
   "AVGO": {
-    "price": 384.05,
-    "prev": 399.97,
-    "chgPct": -3.9803,
+    "price": 389.11,
+    "prev": 384.05,
+    "chgPct": 1.3175,
     "projectStartIdx": 15,
     "history": [
       {
@@ -520,14 +544,20 @@
         "label": "Jul 13",
         "close": 384.05,
         "preProject": false
+      },
+      {
+        "date": "2026-07-14",
+        "label": "Jul 14",
+        "close": 389.11,
+        "preProject": false
       }
     ],
-    "fetchedAt": "2026-07-13T20:04:36.179262+00:00"
+    "fetchedAt": "2026-07-15T01:20:51.055704+00:00"
   },
   "PLTR": {
-    "price": 130.04,
-    "prev": 126.79,
-    "chgPct": 2.5633,
+    "price": 133.72,
+    "prev": 130.04,
+    "chgPct": 2.8299,
     "projectStartIdx": 15,
     "history": [
       {
@@ -625,14 +655,20 @@
         "label": "Jul 13",
         "close": 130.04,
         "preProject": false
+      },
+      {
+        "date": "2026-07-14",
+        "label": "Jul 14",
+        "close": 133.72,
+        "preProject": false
       }
     ],
-    "fetchedAt": "2026-07-13T20:04:36.928695+00:00"
+    "fetchedAt": "2026-07-15T01:20:51.715268+00:00"
   },
   "CCJ": {
-    "price": 90.235,
-    "prev": 95.99,
-    "chgPct": -5.9954,
+    "price": 91.57,
+    "prev": 90.2,
+    "chgPct": 1.5188,
     "projectStartIdx": 15,
     "history": [
       {
@@ -728,16 +764,22 @@
       {
         "date": "2026-07-13",
         "label": "Jul 13",
-        "close": 90.235,
+        "close": 90.2,
+        "preProject": false
+      },
+      {
+        "date": "2026-07-14",
+        "label": "Jul 14",
+        "close": 91.57,
         "preProject": false
       }
     ],
-    "fetchedAt": "2026-07-13T20:04:37.823793+00:00"
+    "fetchedAt": "2026-07-15T01:20:52.605733+00:00"
   },
   "QS": {
-    "price": 6.28,
-    "prev": 6.58,
-    "chgPct": -4.5593,
+    "price": 6.42,
+    "prev": 6.28,
+    "chgPct": 2.2293,
     "projectStartIdx": 15,
     "history": [
       {
@@ -835,14 +877,20 @@
         "label": "Jul 13",
         "close": 6.28,
         "preProject": false
+      },
+      {
+        "date": "2026-07-14",
+        "label": "Jul 14",
+        "close": 6.42,
+        "preProject": false
       }
     ],
-    "fetchedAt": "2026-07-13T20:04:38.525338+00:00"
+    "fetchedAt": "2026-07-15T01:20:53.263134+00:00"
   },
   "NNXPF": {
-    "price": 1.05,
-    "prev": 1.054,
-    "chgPct": -0.3795,
+    "price": 1.06,
+    "prev": 1.04,
+    "chgPct": 1.9231,
     "projectStartIdx": 15,
     "history": [
       {
@@ -938,16 +986,22 @@
       {
         "date": "2026-07-13",
         "label": "Jul 13",
-        "close": 1.05,
+        "close": 1.04,
+        "preProject": false
+      },
+      {
+        "date": "2026-07-14",
+        "label": "Jul 14",
+        "close": 1.06,
         "preProject": false
       }
     ],
-    "fetchedAt": "2026-07-13T20:04:39.187534+00:00"
+    "fetchedAt": "2026-07-15T01:20:53.922536+00:00"
   },
   "GMG": {
-    "price": 29.92,
-    "prev": 29.97,
-    "chgPct": -0.1668,
+    "price": 29.19,
+    "prev": 29.11,
+    "chgPct": 0.2748,
     "projectStartIdx": 15,
     "history": [
       {
@@ -1045,8 +1099,20 @@
         "label": "Jul 13",
         "close": 29.92,
         "preProject": false
+      },
+      {
+        "date": "2026-07-14",
+        "label": "Jul 14",
+        "close": 29.11,
+        "preProject": false
+      },
+      {
+        "date": "2026-07-15",
+        "label": "Jul 15",
+        "close": 29.19,
+        "preProject": false
       }
     ],
-    "fetchedAt": "2026-07-13T20:04:39.886463+00:00"
+    "fetchedAt": "2026-07-15T01:20:54.603364+00:00"
   }
 }
