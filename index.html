@@ -428,7 +428,7 @@ function renderAll() {
 // ── SUMMARY STRIP + KPI STRIP ────────────────────────────────────────────────
 function renderSummary() {
   const el = id => document.getElementById(id);
-  let totalCurrent=0, totalPrev=0, total1wk=0, totalOldest=0;
+  let totalCurrent=0, totalPrev=0, total1wk=0;
   let best=null, worst=null, winners=0;
   let dailyPortMoves = [];  // for volatility calc
 
@@ -436,20 +436,21 @@ function renderSummary() {
     const pd = priceData[s.ticker] || {};
     const h = pd.history || [];
     const dollars = TOTAL_CAPITAL * (s.alloc/100);
-    const oldest = h[0]?.close;
-    const wk5    = h.length>=5 ? h[h.length-5]?.close : null;
-    const prev   = h.length>=2 ? h[h.length-2]?.close : null;
-    const last   = pd.price || h[h.length-1]?.close;
+    const psi  = pd.projectStartIdx ?? h.length;
 
-    // Use oldest history as baseline denominator
-    const base = oldest || last;
+    // Investment baseline = last pre-project close (the day we "bought in")
+    const base = psi > 0 ? h[psi-1]?.close : h[0]?.close;
+    const wk5  = h.length >= (psi+5) ? h[psi+4]?.close          // 5 post-project days ago
+               : h.length >= 5       ? h[h.length-5]?.close : null;
+    const prev = h.length>=2 ? h[h.length-2]?.close : null;
+    const last = pd.price || h[h.length-1]?.close;
+
     if (last && base)   totalCurrent += dollars * (last/base);
     else                totalCurrent += dollars;
     if (prev && base)   totalPrev    += dollars * (prev/base);
     else                totalPrev    += dollars;
     if (wk5  && base)   total1wk     += dollars * (wk5/base);
     else                total1wk     += dollars;
-    totalOldest += dollars;  // baseline = starting capital at oldest date
 
     const chg = pd.chgPct;
     if (chg != null) {
@@ -459,15 +460,16 @@ function renderSummary() {
     }
   });
 
-  // Portfolio high: max daily portfolio value across history
-  // Build portfolio value for each history index
+  // Portfolio high: only across POST-project days (investment period)
+  const psiRef = priceData[PORTFOLIO[0].ticker]?.projectStartIdx ?? 0;
   const histLen = (priceData[PORTFOLIO[0].ticker]?.history||[]).length;
   let portHigh = 0, portHighDate = '';
-  for (let i=1; i<histLen; i++) {
+  for (let i = Math.max(1, psiRef); i < histLen; i++) {
     let val = 0;
     PORTFOLIO.forEach(s => {
       const h = priceData[s.ticker]?.history || [];
-      const base = h[0]?.close;
+      const psi = priceData[s.ticker]?.projectStartIdx ?? h.length;
+      const base = psi > 0 ? h[psi-1]?.close : h[0]?.close;
       const dayClose = h[i]?.close;
       const dollars = TOTAL_CAPITAL*(s.alloc/100);
       if (dayClose && base) val += dollars*(dayClose/base);
@@ -477,12 +479,12 @@ function renderSummary() {
       portHigh = val;
       portHighDate = priceData[PORTFOLIO[0].ticker]?.history[i]?.label || '';
     }
-    // Daily move for volatility
-    if (i>0) {
+    if (i > psiRef) {
       let prevVal = 0;
       PORTFOLIO.forEach(s => {
         const h = priceData[s.ticker]?.history || [];
-        const base = h[0]?.close;
+        const psi = priceData[s.ticker]?.projectStartIdx ?? h.length;
+        const base = psi > 0 ? h[psi-1]?.close : h[0]?.close;
         const d = h[i-1]?.close;
         const dollars = TOTAL_CAPITAL*(s.alloc/100);
         if (d && base) prevVal += dollars*(d/base);
@@ -500,7 +502,7 @@ function renderSummary() {
   el('port-change-label').textContent = (dayDiff>=0?'+':'')+'$'+dayDiff.toFixed(0)+' ('+dayPct.toFixed(2)+'%) vs prev close';
   el('port-change-label').className = 'sum-sub '+(dayDiff>=0?'up':'dn');
 
-  // Total return vs $25k
+  // Total return vs $25k (investment baseline = Jul 10 closes)
   const totalDiff = totalCurrent - TOTAL_CAPITAL;
   const totalPct  = (totalDiff/TOTAL_CAPITAL)*100;
   el('total-return-val').textContent = (totalPct>=0?'+':'')+totalPct.toFixed(2)+'%';
@@ -532,12 +534,12 @@ function renderSummary() {
   el('kpi-week-val').className   = 'kpi-value '+(kpiWk>=0?'up':'dn');
   el('kpi-week').className = 'kpi-card '+(kpiWk>=0?'kpi-up':'kpi-dn');
 
-  // Since tracked (vs oldest history day = project baseline)
-  const kpiTracked = totalOldest>0 ? (totalCurrent-totalOldest)/totalOldest*100 : 0;
+  // Since invested (vs $25k on Jul 10 — last pre-project close)
+  const kpiTracked = (totalCurrent-TOTAL_CAPITAL)/TOTAL_CAPITAL*100;
   el('kpi-tracked-val').textContent = (kpiTracked>=0?'+':'')+kpiTracked.toFixed(2)+'%';
   el('kpi-tracked-val').className   = 'kpi-value '+(kpiTracked>=0?'up':'dn');
   el('kpi-tracked').className = 'kpi-card '+(kpiTracked>=0?'kpi-up':'kpi-dn');
-  el('kpi-tracked-sub').textContent = 'since Jun 18 baseline';
+  el('kpi-tracked-sub').textContent = 'since Jul 10 investment';
 
   // Winners today
   const losers = PORTFOLIO.length - winners;
