@@ -128,6 +128,15 @@
 
   .data-age{font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-left:auto;}
 
+  /* PORTFOLIO VALUE CHART */
+  .port-chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:28px;}
+  .port-chart-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;}
+  .port-chart-title{font-size:13px;font-weight:600;}
+  .port-chart-meta{display:flex;gap:20px;}
+  .port-meta-item{font-size:11px;font-family:var(--font-mono);color:var(--muted);}
+  .port-meta-item span{font-weight:700;}
+  .port-canvas-wrap{position:relative;height:180px;}
+
   /* TIER LINE CHARTS */
   .tier-charts-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
   .tier-chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;}
@@ -220,6 +229,22 @@
       <div class="kpi-label">Avg Daily Move</div>
       <div class="kpi-value" id="kpi-vol-val">—</div>
       <div class="kpi-sub">portfolio volatility</div>
+    </div>
+  </div>
+
+  <div class="section-title">Portfolio Value — Since Inception (Indexed to 100)</div>
+  <div class="port-chart-card">
+    <div class="port-chart-header">
+      <span class="port-chart-title">📈 Portfolio Index &nbsp;<span style="font-size:10px;color:var(--muted);font-weight:400;">Baseline = $25,000 on Jul 10 = 100</span></span>
+      <div class="port-chart-meta">
+        <div class="port-meta-item">Start: <span>100.00</span></div>
+        <div class="port-meta-item">Current: <span id="port-index-now">—</span></div>
+        <div class="port-meta-item">Best day: <span id="port-index-high">—</span></div>
+        <div class="port-meta-item">Worst day: <span id="port-index-low">—</span></div>
+      </div>
+    </div>
+    <div class="port-canvas-wrap">
+      <canvas id="port-index-chart"></canvas>
     </div>
   </div>
 
@@ -420,6 +445,7 @@ function onDayChange() {
 // ── RENDER ALL ────────────────────────────────────────────────────────────────
 function renderAll() {
   renderSummary();
+  renderPortfolioChart();
   renderBarChart();
   renderTierCharts();
   renderCards();
@@ -817,6 +843,164 @@ function initDonut() {
   leg.innerHTML='';
   labels.forEach((l,i)=>{
     leg.innerHTML+=`<div class="cat-item"><div class="cat-dot" style="background:${colors[i]}"></div><span class="cat-name">${l}</span><span class="cat-pct">${data[i]}%</span></div>`;
+  });
+}
+
+// ── PORTFOLIO INDEX CHART ─────────────────────────────────────────────────────
+let portChartInstance = null;
+
+function renderPortfolioChart() {
+  const ALLOC_MAP = {};
+  PORTFOLIO.forEach(s => ALLOC_MAP[s.ticker] = s.alloc);
+
+  // Build day-by-day indexed portfolio value across all post-project days
+  const refHistory = priceData[PORTFOLIO[0].ticker]?.history || [];
+  const psiRef     = priceData[PORTFOLIO[0].ticker]?.projectStartIdx ?? refHistory.length;
+  const postDays   = refHistory.slice(psiRef);
+
+  if (postDays.length < 1) return;
+
+  // Start point: index = 100 on the last pre-project day (investment day)
+  const labels  = ['Jul 10
+(start)', ...postDays.map(d => d.label)];
+  const values  = [100];
+
+  postDays.forEach((day, i) => {
+    let total = 0;
+    PORTFOLIO.forEach(s => {
+      const h   = priceData[s.ticker]?.history || [];
+      const psi = priceData[s.ticker]?.projectStartIdx ?? h.length;
+      const base  = psi > 0 ? h[psi-1]?.close : h[0]?.close;
+      const close = h[psi + i]?.close;
+      const dollars = TOTAL_CAPITAL * (s.alloc/100);
+      total += (close && base) ? dollars*(close/base) : dollars;
+    });
+    values.push(parseFloat(((total/TOTAL_CAPITAL)*100).toFixed(3)));
+  });
+
+  const maxVal  = Math.max(...values);
+  const minVal  = Math.min(...values);
+  const maxIdx  = values.indexOf(maxVal);
+  const minIdx  = values.indexOf(minVal);
+  const current = values[values.length-1];
+  const isUp    = current >= 100;
+
+  // Update meta labels
+  const el = id => document.getElementById(id);
+  el('port-index-now').textContent  = current.toFixed(2);
+  el('port-index-now').style.color  = isUp ? 'var(--green)' : 'var(--red)';
+  el('port-index-high').textContent = maxVal.toFixed(2) + ' (' + labels[maxIdx] + ')';
+  el('port-index-low').textContent  = minVal.toFixed(2) + ' (' + labels[minIdx] + ')';
+
+  const canvas = document.getElementById('port-index-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  // Gradient fill
+  const grad = ctx.createLinearGradient(0, 0, 0, 180);
+  grad.addColorStop(0, isUp ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+  // Plugin: baseline at 100
+  const baselinePlugin = {
+    id: 'portBaseline',
+    beforeDraw(chart) {
+      const {ctx:c, chartArea, scales} = chart;
+      const y100 = scales.y.getPixelForValue(100);
+      if (y100 < chartArea.top || y100 > chartArea.bottom) return;
+      c.save();
+      c.strokeStyle = 'rgba(255,255,255,0.15)';
+      c.lineWidth = 1; c.setLineDash([5,5]);
+      c.beginPath(); c.moveTo(chartArea.left, y100); c.lineTo(chartArea.right, y100); c.stroke();
+      c.setLineDash([]);
+      c.fillStyle = 'rgba(255,255,255,0.3)';
+      c.font = '9px Space Mono,monospace';
+      c.textAlign = 'left';
+      c.fillText('100 (breakeven)', chartArea.left + 6, y100 - 5);
+      c.restore();
+    }
+  };
+
+  // Plugin: annotate current value at last point
+  const currentPlugin = {
+    id: 'portCurrent',
+    afterDraw(chart) {
+      const {ctx:c, chartArea, scales} = chart;
+      const x = scales.x.getPixelForValue(values.length - 1);
+      const y = scales.y.getPixelForValue(current);
+      c.save();
+      c.fillStyle = isUp ? 'var(--green, #10b981)' : 'var(--red, #ef4444)';
+      c.beginPath(); c.arc(x, y, 5, 0, Math.PI*2); c.fill();
+      c.font = 'bold 10px Space Mono,monospace';
+      c.textAlign = x > chartArea.right - 60 ? 'right' : 'left';
+      c.fillText(current.toFixed(2), x + (x > chartArea.right - 60 ? -10 : 10), y + 4);
+      c.restore();
+    }
+  };
+
+  if (portChartInstance) { try { portChartInstance.destroy(); } catch(e){} }
+
+  portChartInstance = new Chart(ctx, {
+    type: 'line',
+    plugins: [baselinePlugin, currentPlugin],
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        borderColor: isUp ? '#10b981' : '#ef4444',
+        borderWidth: 2.5,
+        backgroundColor: grad,
+        fill: true,
+        tension: 0.3,
+        pointRadius: values.map((v,i) => i===0 || i===values.length-1 || v===maxVal || v===minVal ? 4 : 0),
+        pointBackgroundColor: values.map((v,i) => {
+          if (v === maxVal) return '#10b981';
+          if (v === minVal) return '#ef4444';
+          return isUp ? '#10b981' : '#ef4444';
+        }),
+        pointHoverRadius: 5,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#161d2e',
+          borderColor: '#1e2d45',
+          borderWidth: 1,
+          callbacks: {
+            label: ctx => {
+              const v = ctx.parsed.y;
+              const portVal = (v/100)*TOTAL_CAPITAL;
+              const diff = portVal - TOTAL_CAPITAL;
+              return [
+                ` Index: ${v.toFixed(2)}`,
+                ` Value: $${portVal.toLocaleString(undefined,{maximumFractionDigits:0})}`,
+                ` vs $25k: ${diff>=0?'+':''}$${diff.toFixed(0)}`
+              ];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color:'#64748b', font:{size:9,family:'Space Mono'} },
+          grid: { color:'#1e2d45' }
+        },
+        y: {
+          min: Math.floor(minVal - 1),
+          max: Math.ceil(maxVal + 1),
+          ticks: {
+            color:'#64748b', font:{size:9},
+            callback: v => v.toFixed(1)
+          },
+          grid: { color:'#1e2d45' }
+        }
+      }
+    }
   });
 }
 
