@@ -861,8 +861,7 @@ function renderPortfolioChart() {
   if (postDays.length < 1) return;
 
   // Start point: index = 100 on the last pre-project day (investment day)
-  const labels  = ['Jul 10
-(start)', ...postDays.map(d => d.label)];
+  const labels  = [['Jul 10','(start)'], ...postDays.map(d => d.label)];
   const values  = [100];
 
   postDays.forEach((day, i) => {
